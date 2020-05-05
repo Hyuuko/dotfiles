@@ -1,22 +1,15 @@
 {
     // 文档: https://code.visualstudio.com/docs
     // 推荐插件：
-    // C/C++、C/C++ Clang Command Adapter、Code Runner、Cmake 、CMake Tools
+    // C/C++、ccls、clangd、Code Runner、Cmake 、CMake Tools
     // GNU Assembler Language Support、Debugger for java 、Maven for Java
     // Bracket Pair Colorizer 2、Visual Studio Blue Theme、Color Highligh
     // Markdown All in one、One Dark Pro 、Git Historyt、Better TOML
     // Python、Remote - *、Rust(rls) 、LinkerScript、LaTeX Workshop
-    "C_Cpp.default.compilerPath": "D:/msys64/mingw64/bin/clang++.exe", // 使用MSYS2的clang
-    "C_Cpp.default.intelliSenseMode": "clang-x64",
-    "C_Cpp.default.cStandard": "c11",
-    "C_Cpp.default.cppStandard": "c++11",
-    "C_Cpp.intelliSenseCacheSize": 0, // 禁用预编译的头缓存
-    "C_Cpp.autocomplete": "Disabled", // 禁用C/C++插件的自动补全(实在是太垃圾了)
-    "C_Cpp.errorSquiggles": "Disabled", // 已经有C/C++ Clang Command Adapter了
-    "C_Cpp.autoAddFileAssociations": false,
-    "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools"
-    },
+    "C_Cpp.autocomplete": "Disabled",
+    "C_Cpp.formatting": "Disabled",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.intelliSenseEngine": "Disabled",
     "code-runner.executorMap": {
         "c": "cd $dir && clang $fileName -o $fileNameWithoutExt.exe && ./$fileNameWithoutExt.exe",
         "cpp": "cd $dir && clang++ $fileName -o $fileNameWithoutExt.exe && ./$fileNameWithoutExt.exe",
@@ -26,12 +19,17 @@
     "code-runner.runInTerminal": true,
     "code-runner.preserveFocus": false,
     "code-runner.saveAllFilesBeforeRun": true,
+    //"ccls.completion.detailedLabel": true,
+    //"ccls.codeLens.enabled": false,
     "diffEditor.ignoreTrimWhitespace": false,
+    "editor.snippetSuggestions": "bottom",
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    //"editor.formatOnType": true,
     "editor.fontFamily": "Consolas, 微软雅黑",
     "editor.fontSize": 16,
-    "editor.formatOnSave": false,
     "editor.tokenColorCustomizations": {},
     "editor.renderControlCharacters": true,
+    "editor.minimap.maxColumn": 80,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "files.autoGuessEncoding": true,
@@ -62,7 +60,7 @@
     },
     "markdown.preview.fontSize": 15,
     "markdown.preview.lineHeight": 1.1,
-    "markdown.preview.fontFamily": "FiraCode Nerd Font Mono, 微软雅黑",
+    "markdown.preview.fontFamily": "Consolas, 微软雅黑",
     "svn.path": "D:/msys64/usr/bin/svn.exe",
     "svn.diff.withHead": false,
     "terminal.integrated.fontFamily": "FiraCode NF", // https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode

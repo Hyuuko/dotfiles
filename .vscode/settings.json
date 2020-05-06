@@ -1,13 +1,13 @@
 {
     // 文档: https://code.visualstudio.com/docs
     // 推荐插件：
-    // C/C++、ccls、clangd、Code Runner、Cmake 、CMake Tools
-    // GNU Assembler Language Support、Debugger for java 、Maven for Java
-    // Bracket Pair Colorizer 2、Visual Studio Blue Theme、Color Highligh
-    // Markdown All in one、One Dark Pro 、Git Historyt、Better TOML
+    // C/C++、ccls、Code Runner、Cmake 、CMake Tools
+    // GNU Assembler Language Support、Java Extension Pack
+    // Bracket Pair Colorizer 2、Visual Studio Blue Theme、Color Highlight
+    // Markdown All in one、One Dark Pro 、Git History、Better TOML
     // Python、Remote - *、Rust(rls) 、LinkerScript、LaTeX Workshop
     "C_Cpp.autocomplete": "Disabled",
-    "C_Cpp.formatting": "Disabled",
+    //"C_Cpp.formatting": "Disabled",
     "C_Cpp.errorSquiggles": "Disabled",
     "C_Cpp.intelliSenseEngine": "Disabled",
     "code-runner.executorMap": {
@@ -19,12 +19,15 @@
     "code-runner.runInTerminal": true,
     "code-runner.preserveFocus": false,
     "code-runner.saveAllFilesBeforeRun": true,
-    //"ccls.completion.detailedLabel": true,
-    //"ccls.codeLens.enabled": false,
+    "ccls.completion.detailedLabel": true,
+    "ccls.completion.enableSnippetInsertion": true,
+    "ccls.codeLens.enabled": false,
+    "cmake.configureOnOpen": false,
     "diffEditor.ignoreTrimWhitespace": false,
     "editor.snippetSuggestions": "bottom",
     "editor.suggest.snippetsPreventQuickSuggestions": false,
     //"editor.formatOnType": true,
+    //"editor.formatOnSave": true,
     "editor.fontFamily": "Consolas, 微软雅黑",
     "editor.fontSize": 16,
     "editor.tokenColorCustomizations": {},
@@ -52,6 +55,12 @@
         // DOS
         //"**/*.EXE": true,
         //"**/*.OBJ": true,
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/*.ccls-cache": true,
     },
     "files.associations": {
         "*.m": "matlab",
@@ -170,6 +179,7 @@
     },
     "java.help.firstView": "gettingStarted",
     "java.configuration.checkProjectSettingsExclusions": false,
-    "java.home": "E:\\Programs\\Java\\jdk1.8.0_241",
-    "java.configuration.maven.userSettings": "E:\\Programs\\apache-maven-3.6.3\\conf\\settings.xml",
+    "java.home": "E:/Programs/Java/jdk1.8.0_241",
+    "java.configuration.maven.userSettings": "E:/Programs/apache-maven-3.6.3/conf/settings.xml",
+    "java.semanticHighlighting.enabled": true,
 }

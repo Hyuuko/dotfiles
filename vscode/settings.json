@@ -1,0 +1,106 @@
+{
+  // 文档: https://code.visualstudio.com/docs
+  // 推荐插件：
+  // Rust(rls) 、rust-analyzer、Liver Server、Prettier - Code formatter
+  // C/C++、ccls、Code Runner、Cmake 、CMake Tools
+  // GNU Assembler Language Support、Java Extension Pack
+  // Bracket Pair Colorizer 2、Visual Studio Blue Theme、Color Highlight
+  // Markdown All in one、One Dark Pro 、Git History、Better TOML
+  // Python、Remote - *、LinkerScript、LaTeX Workshop
+  "C_Cpp.autocomplete": "Disabled",
+  "C_Cpp.formatting": "Disabled",
+  "C_Cpp.errorSquiggles": "Disabled",
+  "C_Cpp.intelliSenseEngine": "Disabled",
+  "code-runner.executorMap": {
+    "c": "cd $dir && clang $fileName -o $fileNameWithoutExt.exe && ./$fileNameWithoutExt.exe",
+    "cpp": "cd $dir && clang++ $fileName -o $fileNameWithoutExt.exe && ./$fileNameWithoutExt.exe",
+    "python": "cd $dir && python $fileName"
+  },
+  "code-runner.terminalRoot": "/", // unix风格
+  "code-runner.runInTerminal": true,
+  "code-runner.preserveFocus": false,
+  "code-runner.saveAllFilesBeforeRun": true,
+  "ccls.completion.detailedLabel": true,
+  "ccls.completion.enableSnippetInsertion": true,
+  "ccls.codeLens.enabled": false,
+  "cmake.configureOnOpen": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.rulers": [80],
+  "editor.snippetSuggestions": "bottom",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.formatOnType": true,
+  "editor.formatOnSave": true,
+  "editor.fontFamily": "FiraCode Nerd Font, 微软雅黑",
+  "editor.fontSize": 15,
+  "editor.renderControlCharacters": true,
+  "editor.minimap.maxColumn": 80,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "files.autoGuessEncoding": true,
+  "files.trimTrailingWhitespace": true,
+  "files.defaultLanguage": "cpp",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+    // vs
+    //"**/Debug": true,
+    //"**/Release": true,
+    //"**/x64": true,
+    //"**/.vs": true,
+    //"**/*.exe": true,
+    // linux
+    //"**/*.out": true,
+    // DOS
+    //"**/*.EXE": true,
+    //"**/*.OBJ": true,
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/*.ccls-cache": true
+  },
+  "files.associations": {
+    "*.m": "matlab",
+    "*.gdbinit*": "shellscript",
+    "*shrc": "shellscript",
+    "*.asm": "gas" // GNU Assembly
+  },
+  "markdown.preview.fontSize": 15,
+  "markdown.preview.lineHeight": 1.1,
+  "markdown.preview.fontFamily": "FiraCode Nerd Font, 微软雅黑",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "svn.path": "D:/msys64/usr/bin/svn.exe",
+  "svn.diff.withHead": false,
+  "terminal.integrated.fontFamily": "FiraCode Nerd Font", // https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
+  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.shell.windows": "D:/msys64/usr/bin/bash.exe", // 使用msys2的bash
+  //"terminal.integrated.shell.windows": "wsl.exe",
+  "terminal.integrated.scrollback": 2000,
+  "todo-tree.highlights.defaultHighlight": {
+    "background": "#ff0"
+  },
+  "todo-tree.tree.showScanModeButton": false,
+  "window.openFoldersInNewWindow": "on",
+  "window.zoomLevel": -1,
+  "window.titleBarStyle": "custom",
+  "workbench.settings.openDefaultSettings": true,
+  "workbench.settings.useSplitJSON": true,
+  "workbench.settings.editor": "json",
+  "workbench.colorCustomizations": {
+    "[Visual Studio Blue]": {
+      "editor.background": "#f8f8f8",
+      "tab.inactiveBackground": "#a7b2d5",
+      "tab.inactiveForeground": "#000000",
+      "editorGroupHeader.noTabsBackground": "#a7b2d5",
+      "editorGroupHeader.tabsBackground": "#a7b2d5"
+    }
+  }
+  //"http.proxy": "socks5://127.0.0.1:7890",
+  //"http.proxyStrictSSL": false,
+}

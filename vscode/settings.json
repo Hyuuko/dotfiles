@@ -30,7 +30,7 @@
   "editor.suggest.snippetsPreventQuickSuggestions": false,
   "editor.formatOnType": true,
   "editor.formatOnSave": true,
-  "editor.fontFamily": "FiraCode Nerd Font, 微软雅黑",
+  "editor.fontFamily": "FiraCode Nerd Font, Noto Sans CJK SC", // 第二个是思源黑体，应该
   "editor.fontSize": 15,
   "editor.renderControlCharacters": true,
   "editor.minimap.maxColumn": 80,
@@ -70,8 +70,8 @@
     "*.asm": "gas" // GNU Assembly
   },
   "markdown.preview.fontSize": 15,
-  "markdown.preview.lineHeight": 1.1,
-  "markdown.preview.fontFamily": "FiraCode Nerd Font, 微软雅黑",
+  //"markdown.preview.lineHeight": 1.1,
+  "markdown.preview.fontFamily": "FiraCode Nerd Font, Noto Sans CJK SC",
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },

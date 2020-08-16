@@ -11,6 +11,16 @@
 
 下载[Manjaro xfce](https://manjaro.org/download/) 或者直接去[华为云的 Manjaro 镜像](https://repo.huaweicloud.com/manjaro-cd/)，建议选 minimal （最小安装）版
 
+我们在 vscode 里用比较一下完整版和 minimal 的区别（其实也可以用 `git diff` 命令）：
+
+```bash
+git init diff
+curl -o minimal.txt https://mirrors.huaweicloud.com/manjaro-cd/xfce/20.0.3/minimal/manjaro-xfce-20.0.3-minimal-200606-linux56-pkgs.txt
+git add . && git commit -m "minimal.txt"
+curl -o minimal.txt https://mirrors.huaweicloud.com/manjaro-cd/xfce/20.0.3/manjaro-xfce-20.0.3-200606-linux56-pkgs.txt
+# 然后就可以查看完整版比minimal版多了gcc、jdk8还有一些桌面组件、壁纸等等
+```
+
 1. 先用 [rufus](https://rufus.ie/) 制作 Manjaro 的 USB 启动盘。制作完成后重启电脑，在显示笔记本厂商图标前按 F12 选择启动 USB 安装盘
 2. 然后开始选择时区、语言等，如果有 Invidia 显卡，那么 driver 请选择 no free
 3. 然后开始 boot，进入 Live CD 安装环境，在右下角断开网络连接，然后设置时区语言等等..
@@ -27,12 +37,28 @@
 
 ## 设置时区，同步时间
 
+参考：[同步 Linux 双系统的时间](https://mogeko.me/2019/062/)
+
 ```bash
 su
 timedatectl list-timezones              # 列出所有时区
 timedatectl set-timezone Asia/Shanghai  # 设置时区
-timedatectl set-local-rtc true          # 设置为本地时间
-ntpdate -u cn.ntp.org.cn                # 同步网络时间
+timedatectl set-local-rtc true          # 设置为RTC（BIOS时间）
+# 如果时间还不正常，说明是BIOS时间错了，需要重启按F2,修改BIOS时间
+timedatectl status  # 查看状态，如果 RTC 与 CST 相同就说明设置成功了
+```
+
+接下来启用 NTP 自动对时，`nano /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
+
+```
+NTP=time1.aliyun.com time2.aliyun.com time3.aliyun.com time4.aliyun.com time5.aliyun.com time6.aliyun.com time7.aliyun.com
+```
+
+然后：
+
+```bash
+timedatectl set-ntp true      # 启动 NTP
+timedatectl timesync-status   # 查看 NTP 的状态
 ```
 
 ## 换源
@@ -56,14 +82,22 @@ pacman -Syu                         # 系统更新
 
 ## 安装软件
 
+- ArchWiki 的推荐：[General recommendations (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/General_recommendations_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- 关于字体：[Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
 ```bash
-pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code wqy-microhei fcitx-im fcitx-configtool fcitx-sunpinyin archlinuxcn/visual-studio-code-bin archlinuxcn/google-chrome zsh neovim neofetch v2ray qv2ray qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan bat lolcat base-devel yay proxychains-ng tokei
+# 为了方便就全写一起了
+su
+pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code wqy-microhei adobe-source-han-sans-cn-fonts \
+fcitx5-chinese-addons fcitx5 fcitx5-gtk fcitx5-qt fcitx5-rime fcitx5-material-color \
+v2ray qv2ray qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan \
+archlinuxcn/visual-studio-code-bin archlinuxcn/google-chrome zsh neovim neofetch bat lolcat base-devel yay proxychains-ng tokei xfce4-goodies wallpapers-2018
 
 # yay 换源
 yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
 # 查看 Fira 字体
 fc-list | grep Fira
-# 查看安装了的中文字体，可以看到刚才安装了WenQuanYi Micro Hei Mono
+# 查看安装了的中文字体
 fc-list :lang=zh
 ```
 
@@ -83,7 +117,6 @@ nameserver 223.5.5.5
 ```bash
 yay -S imwheel
 nvim ~/.imwheelrc
-imwheel
 ```
 
 写入如下内容：
@@ -98,7 +131,7 @@ Shift_L,   Up,   Shift_L|Button4
 Shift_L,   Down, Shift_L|Button5
 ```
 
-打开系统设置->会话和启动->应用程序自启动->添加->命令：`/usr/bin/imwheel`
+然后运行`imwheel`命令来生效。最后，打开系统设置->会话和启动->应用程序自启动->添加->命令：`/usr/bin/imwheel`
 
 ## 设置代理
 
@@ -174,7 +207,7 @@ git config --global http.proxy 'socks5://127.0.0.1:7890'
 git config --global https.proxy 'socks5://127.0.0.1:7890'
 ```
 
-## zsh 和 antigen，以及输入法
+## zsh 和 antigen
 
 ```bash
 # 安装 antigen，此过程用代理更快些
@@ -200,28 +233,93 @@ proxychains -q zsh
 nvim /etc/passwd
 ```
 
-`vim ~/.xprofile` 添加以下内容
+注销后再登录
 
-```sh
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export XMODIFIERS="@im=fcitx"
+## 输入法和皮肤
+
+参考：[在 Manjaro 上优雅地使用 Fcitx5](https://www.wannaexpresso.com/2020/03/26/fcitx5/)
+
+先不要打开 Fcitx！修改配置文件 ~/.config/fcitx5/profile 时，请务必退出 fcitx5 输入法，否则会因为输入法退出时会覆盖配置文件导致之前的修改被覆盖，修改其他配置文件可以不用退出 fcitx5 输入法，不过生效仍需重启
+
+`vim ~/.config/fcitx5/profile` 添加以下内容
+
+```conf
+[Groups/0]
+# Group Name
+Name=Default
+# Layout
+Default Layout=us
+# Default Input Method
+DefaultIM=rime
+
+[Groups/0/Items/0]
+# Name
+Name=keyboard-us
+# Layout
+Layout=
+
+[Groups/0/Items/1]
+# Name
+Name=rime
+# Layout
+Layout=
+
+[GroupOrder]
+0=Default
 ```
 
-注销后再登录，看看 Fctix 有没有自启，然后打开 Fctix 配置
+`vim ~/.pam_environment`，添加：
 
-1. 将输入法配置这一页只留下`键盘-英语（美国）`和`sunpinyin`，其他都删掉
-2. 将输入法配置->全局配置->切换激活/非激活输入法改成`Lshift`
-3. 候选词个数改为 10
-4. 输入法配置->外观：勾选竖排候选词列表
+```conf
+GTK_IM_MODULE=fcitx5
+QT_IM_MODULE=fcitx5
+XMODIFIERS="@im=fcitx5"
+```
+
+`echo ${XDG_SESSION_TYPE}`，如果输出的是 x11 那就需要`vim ~/.xprofile`，添加：
+
+```bash
+fcitx5 &
+```
+
+接下来配置 rime，配置文件在 ~/.local/share/fcitx5/rime
+
+1. `vim ~/.local/share/fcitx5/rime/build/default.yaml`
+   1. 将`- schema: luna_pinyin_simp`以默认使用简体
+
+接下来配置皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
+
+```conf
+# 垂直候选列表
+Vertical Candidate List=False
+# 按屏幕 DPI 使用
+PerScreenDPI=True
+# Font (设置成你喜欢的字体)
+Font="思源黑体 CN Medium 12"
+# 主题
+Theme=Material-Color-Blue
+```
+
+然后设置单行模式，`vim ~/.config/fcitx5/conf/rime.conf`，添加：
+
+```conf
+# 可用时在应用程序中显示预编辑文本
+PreeditInApplication=True
+```
+
+注销，重新登录,Fctix 应该会自启。切换输入法的技巧是：按住 Ctrl 不动，再按 Shift。在第一次切换后，才可以直接按 Shift 切换。Shift 尽量按个 0.5 秒比较好
 
 ## Rust
 
 注：有很多已经在`.zshrc`里设置了，比如环境变量等等，此处就不再重复了。
 
 ```bash
+# 请在 hyuuko 用户里安装
+su hyuuko
 # 直接默认安装 stable
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+# 重启 zsh（这会执行.zshrc中的source $HOME/.cargo/env）
+exec zsh
 # 安装 nightly
 rustup toolchain install nightly
 
@@ -230,7 +328,6 @@ mkdir ~/.zfunc
 rustup completions zsh > ~/.zfunc/_rustup
 # 启用 cargo 补全
 rustup completions zsh cargo > ~/.zfunc/_cargo
-# 重启 zsh
 exec zsh
 ```
 
@@ -289,7 +386,19 @@ systemctl enable vmware-networks      # 启用虚拟机网络
 systemctl start vmware-networks
 ```
 
+## other
+
+- 所有设置->屏幕保护。改为 20 分钟
+- 打开 chrome 和 vscode 时，有时会弹出“您登录计算机时，您的登录密钥环未被解锁”
+  ```bash
+  sudo pacman -S seahorse
+  seahorse
+  ```
+  点击左上的加号新建一个 Password keyring，密码为空，然后将其设置为默认
+
 ## TODO
 
-- [ ] 同步油猴脚本
-- [ ] 记忆窗口大小
+- [ ] xfce 好像不能记忆窗口大小
+- [ ] emoji 字体
+- [ ] 校园网[Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [ ] 鼠标宏（前进/后退）没有用 https://hustergs.github.io/archives/ec23118f.html https://wiki.archlinux.org/index.php/Mouse_buttons

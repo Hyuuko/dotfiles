@@ -193,6 +193,7 @@ chrome 设置系统代理（若 chrome 无法打开系统代理，则`google-chr
 ```bash
 git config --global user.email "751533978@qq.com"
 git config --global user.name "hyuuko"
+git config --global core.editor nvim
 
 su hyuuko
 # 如果把先前的机器上的私钥公钥备份，则再生成一份
@@ -237,9 +238,13 @@ nvim /etc/passwd
 
 ## 输入法和皮肤
 
-参考：[在 Manjaro 上优雅地使用 Fcitx5](https://www.wannaexpresso.com/2020/03/26/fcitx5/)
+参考：
 
-先不要打开 Fcitx！修改配置文件 ~/.config/fcitx5/profile 时，请务必退出 fcitx5 输入法，否则会因为输入法退出时会覆盖配置文件导致之前的修改被覆盖，修改其他配置文件可以不用退出 fcitx5 输入法，不过生效仍需重启
+- [在 Manjaro 上优雅地使用 Fcitx5](https://www.wannaexpresso.com/2020/03/26/fcitx5/)
+- [RIME 使用说明](https://github.com/rime/home/wiki/UserGuide)
+- [Linux 下 Rime 输入法配置记录](http://einverne.github.io/post/2014/11/rime.html)
+
+先不要打开 Fcitx！修改配置文件 ~/.config/fcitx5/profile 时，请务必退出 fcitx5 输入法，否则会因为输入法退出时会覆盖配置文件导致之前的修改被覆盖，修改其他配置文件可以不用退出 fcitx5 输入法，只需右键图标，点击重新部署即可生效
 
 `vim ~/.config/fcitx5/profile` 添加以下内容
 
@@ -253,12 +258,6 @@ Default Layout=us
 DefaultIM=rime
 
 [Groups/0/Items/0]
-# Name
-Name=keyboard-us
-# Layout
-Layout=
-
-[Groups/0/Items/1]
 # Name
 Name=rime
 # Layout
@@ -282,12 +281,30 @@ XMODIFIERS="@im=fcitx5"
 fcitx5 &
 ```
 
-接下来配置 rime，配置文件在 ~/.local/share/fcitx5/rime
+注销，重新登录，Fctix 应该会自启，rime 第一次加载要花几十秒。如果有多个输入法，切换输入法的技巧是：按住 Ctrl 不动，再按 Shift。在第一次切换后，才可以直接按 Shift 切换。Shift 尽量按个 0.5 秒比较好。如果只启用了 rime 这一个输入法，用 Shift 键就可以切换中英文。
 
-1. `vim ~/.local/share/fcitx5/rime/build/default.yaml`
-   1. 将`- schema: luna_pinyin_simp`以默认使用简体
+接下来配置 rime，`vim ~/.local/share/fcitx5/rime/default.custom.yaml`以编辑自定义默认设置：
 
-接下来配置皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
+```yaml
+# 如果没生效，可能是配置格式错了
+patch:
+  switcher/hotkeys:
+    # 使用 / 符号表明只改变hotkeys这一个选项
+    # 否则会将整个 switcher 下的所有选项一起改变
+    - F4
+  menu/page_size: 9
+  schema_list:
+    # 把luna_pinyin_simp放在第一个，这样就默认简体
+    - schema: luna_pinyin_simp
+    - schema: luna_pinyin
+    - schema: luna_pinyin_fluency
+```
+
+右键右下角 Rime 的图标，点击重新部署，配置文件会生成到`~/.local/share/fcitx5/rime/build`，然后就会生效。更多配置请详细阅读[Rime 定制指南](https://github.com/rime/home/wiki/CustomizationGuide)等文档
+
+Rime 输入法在使用中会在一定时间自动将用户词典备份为快照文件`*.userdb.txt`（还没看到过）
+
+接下来配置输入法皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
 
 ```conf
 # 垂直候选列表
@@ -307,7 +324,7 @@ Theme=Material-Color-Blue
 PreeditInApplication=True
 ```
 
-注销，重新登录,Fctix 应该会自启。切换输入法的技巧是：按住 Ctrl 不动，再按 Shift。在第一次切换后，才可以直接按 Shift 切换。Shift 尽量按个 0.5 秒比较好
+右键右下角 Rime 的图标，点击重新启动，就会生效了
 
 ## Rust
 
@@ -396,9 +413,47 @@ systemctl start vmware-networks
   ```
   点击左上的加号新建一个 Password keyring，密码为空，然后将其设置为默认
 
+### 鼠标宏
+
+如果不配置的话，鼠标宏（前进/后退）没有用，试过https://hustergs.github.io/archives/ec23118f.html，结果弄不好，还好有其他的解决办法
+
+```bash
+sudo pacman -S piper
+```
+
+然后将前进和后退按钮映射为`Alt + right`和`Alt + left`（chrome 的前进后退快捷键就是这个）
+
+设置 vscode 的快捷键：
+
+```json
+[
+  {
+    "key": "alt+left",
+    "command": "workbench.action.navigateBack"
+  },
+  {
+    "key": "ctrl+alt+-",
+    "command": "-workbench.action.navigateBack"
+  },
+  {
+    "key": "alt+right",
+    "command": "workbench.action.navigateForward"
+  },
+  {
+    "key": "ctrl+shift+-",
+    "command": "-workbench.action.navigateForward"
+  }
+]
+```
+
+并且给 vscode 添加设置以禁用中键的复制行为，这样就可以使用中键选择多行了：
+
+```json
+"editor.selectionClipboard": false,
+```
+
 ## TODO
 
 - [ ] xfce 好像不能记忆窗口大小
 - [ ] emoji 字体
 - [ ] 校园网[Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
-- [ ] 鼠标宏（前进/后退）没有用 https://hustergs.github.io/archives/ec23118f.html https://wiki.archlinux.org/index.php/Mouse_buttons

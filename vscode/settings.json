@@ -34,6 +34,7 @@
   "editor.fontSize": 15,
   "editor.renderControlCharacters": true,
   "editor.minimap.maxColumn": 80,
+  "editor.selectionClipboard": false,
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "files.autoGuessEncoding": true,

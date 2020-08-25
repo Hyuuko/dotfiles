@@ -22,8 +22,8 @@ Redmi K30 Pro
 - [Magisk Manager 详解 - 少数派](https://sspai.com/post/53809)
 - [每个 Android 玩家都不可错过的神器（一）：Magisk 初识与安装 - 少数派](https://sspai.com/post/53043)
 
-1. [解锁小米手机](https://www.miui.com/unlock/download.html)
-   1. 按照流程操作，解锁手机的 Bootloader（BL）
+1. 解锁小米手机的 Bootloader
+   1. 按照[官方流程](https://www.miui.com/unlock/download.html)操作，解锁手机的 Bootloader（BL）
 2. 安装 Magisk Manager 并下载 Magisk 包
    1. 在酷安里安装 Magisk Manager，打开
    2. 然后点击 Magisk 右边的安装按钮，选择仅下载安装包。安装包就会下载到`/storage/emulated/0/Download/Magisk-v20.4(20400).zip`里
@@ -35,7 +35,7 @@ Redmi K30 Pro
    1. 用 clash 代理 Magisk Manager
    2. 在设置里开启「Magisk 核心功能模式」和「Magisk Hide」；然后在侧边菜单里的 Magisk Hide 里勾选 Google Play；在下载里找到 MagiskHide Props Config 这个模块，安装，完成后在模块界面启用该模块，然后重启
    3. 打开 Magisk Manager，点击检查 SafeyNet
-      1. 如果 ctsProfile 这一项没有通过。那么需要点击左上角，在菜单里点击下载，
+      1. 如果 ctsProfile 这一项没有通过。那么我也不知道咋办
       2. 如果是 basic integrity 这一项没有通过，试着开启「Magisk 核心功能模式」或者卸载所有模块，如果还是没有通过，那么可能需要换一个系统或者第三方 ROM 了
 
 如何让 app 获取 root 权限呢？当 app 申请 root 权限时，点击同意就行了！

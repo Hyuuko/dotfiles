@@ -154,3 +154,27 @@ Type 'scoop help <command>' to get help for a specific command.
 
 然后打开`rustup-init.exe`，安装完后确保`E:\Rust\cargo\bin`在 Path 中（应该会自动弄好）
 rustup toolchain install nightly
+
+## 记录
+
+## Chocolatey
+
+以管理员身份打开 powershell
+
+```powershell
+# 设置安装目录为 E:\Chocolatey
+$env:ChocolateyInstall='E:\Chocolatey'
+[Environment]::SetEnvironmentVariable('ChocolateyInstall', $env:ChocolateyInstall, 'Machine')
+# 安装 Chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+```
+
+卸载 Chocolatey 需要删除相关的环境变量，并且在 Path 里去除，并且删除 Chocolatey 文件夹
+
+```powershell
+# 查看安装的软件列表
+choco list -l
+choco list -li
+```
+
+可以在这里查找包：https://chocolatey.org/packages，或者 `choco search`

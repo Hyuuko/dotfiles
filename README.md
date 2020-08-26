@@ -133,6 +133,10 @@ Shift_L,   Down, Shift_L|Button5
 - [OVO](https://v2.qovoq.ml/#/dashboard)
   - [trojan](http://ovo.dy.cdn.llsmall.com/api/v1/client/subscribe?token=b3ce1c807ec9d3532ee57d1994ec1d2d)
 
+### proxychains
+
+`vim /etc/proxychains.conf`，将 proxy_dns 这一行注释。（这样能够让 proxychains 代理 yay），并且将最后一行的 `socks4 127.0.0.1 9095` 修改为 `socks5 127.0.0.1 7890`
+
 ### qv2ray
 
 请注意一定要同步好系统时间以及详读[qv2ray 文档](https://qv2ray.net/)
@@ -146,9 +150,13 @@ Shift_L,   Down, Shift_L|Button5
 
 点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
 
-### proxychains
-
-`vim /etc/proxychains.conf`，将 proxy_dns 这一行注释。（这样能够让 proxychains 代理 yay），并且将最后一行的 `socks4 127.0.0.1 9095` 修改为 `socks5 127.0.0.1 7890`
+```bash
+# 更换 geoip.dat 和 geosite.dat
+pc curl -L -o /tmp/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
+pc curl -L -o /tmp/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
+sudo cp /tmp/geoip.dat /usr/lib/v2ray && rm /tmp/geoip.dat
+sudo cp /tmp/geosite.dat /usr/lib/v2ray && rm /tmp/geosite.dat
+```
 
 ## google-chrome
 
@@ -499,36 +507,109 @@ fc-list | grep Sarasa # 查看字体
 
 ### 主题
 
-两种方法安装主题（不要在系统设置里弄，会安装失败）
+三种方法安装主题
 
-1. 第一种
+- 第一种：在系统设置->外观里安装（需要选一个好一点的代理）
+- 第二种
+  ```bash
+  yay -S ocs-url
+  ```
+  然后比如在 https://store.kde.org/p/1310500 点安装按钮
+- 第三种：手动下载，解压
+  <br>/usr/share/plasma/desktoptheme 这是存放 plasma 主题
+  <br>/usr/share/plasma/look-and-feel/ 存放全局主题
+  <br>/usr/share/plasma/plasmoids/ 存放插件
+  <br>~/.local/share/plasma/是用户的
+  <br>把解压出的 com.github.vinceliuice.McMojave 复制进/usr/share/plasma/look-and-feel/
+
+#### 系统设置
+
+- 全局主题。选择 `McMojave-light`，不要勾选`使用来自主题的桌面布局`
+- Plasma 样式。选择`Breath2 Light`
+- 应用程序风格
+  - 应用样式。选择`微风`
+  - 窗口装饰
+    - 主题。选择`Breezemite`，并且`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`修改默认配置以调节边框大小
+      ```
+      PaddingBottom=68
+      PaddingLeft=60
+      PaddingRight=60
+      PaddingTop=30
+      ```
+    - 标题栏按钮。左边是 菜单 保持在上方，右边是 上下文帮助 最小化 最大化 关闭
+- 颜色。选择`McMojaveLight`
+- 图标。选择`McMojave-circle`
+- 工作区间行为
+  - 常规行为->动画速度。调到第 13 格
+  - 锁屏->外观。锁屏壁纸选择`matrix-manjaro`
+- 输入设备->鼠标。指针速度 8 格
+- 显示和监控->混成器->渲染后端。选择`OpenGL 3.1`
+- 在桌面上右键，配置桌面
+  - 壁纸。选择`mountains-1412683`
+  - 鼠标动作。中键改为`切换窗口`
+
+#### 面板
+
+- 面板在下方，部件从左到右依次是：应用程序面板 图标任务管理器 显示桌面 系统托盘 数字时钟 系统负荷查看器
+- 点击左下角的应用程序面板，右键程序图标可以`固定到任务管理器`
+- 右键面板中的图标任务管理器，进入配置图标任务管理器，勾选`悬停任务时高亮窗口`
+- Notes：系统托盘设置里基本都是`相关时显示`
+- 系统负荷查看器设置。监视器类型选择紧凑柱状图
+
+如果想要 Mac 那样的底部 dock 可以 `sudo pacman -S latte-dock`
+
+- 数字时钟设置
+  - 勾选`显示日期` `显示秒`
+  - `时间显示`设置为 24 小时制
+  - `日期格式`为自定义：M/d
+
+#### 其他
+
+- 按 F12 打开 Yakuake，然后右键编辑当前方案->外观，新建一个配色方案，背景透明度 20%
+
+## Tips
+
+- 按 F12 可以打开 Yakuake（一个快捷终端），不要点击关闭按钮，直接按 F12 或点击其他地方隐藏就行
+- Alt+Space 或者直接在桌面输入字符就可打开 KRunner
+- 系统负荷查看器
+  - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
+  - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
+
+## 修复 grub
+
+有几种可能造成启动时无法引导 Manjaro
+
+1. win10 更新后 grub 被破坏
+2. 使用傲梅分区助手移动分区时，grub 被破坏（暂时未找到解决办法）
+3. 等等
+
+### grub 没有完全坏掉可以进入 grub rescue 救援模式
+
+参考：https://blog.csdn.net/aaazz47/article/details/78549409
+
+先查找 Linux 系统引导所在
 
 ```bash
-yay -S ocs-url
+grub rescue> ls
+(hd0) (hd0,gpt8) (hd0,gpt7) (hd0,gpt6) ...
+grub rescue> ls (hd0,gpt8)/
+./ ../ lost+found/ bin/ boot/ dev/ etc/ ...
 ```
 
-然后在https://store.kde.org/p/1310500点安装按钮
-
-2. 第二种
-   手动下载，解压
-   /usr/share/plasma/desktoptheme 这是存放 plasma 主题
-   /usr/share/plasma/look-and-feel/ 存放全局主题
-   /usr/share/plasma/plasmoids/ 存放插件
-   ~/.local/share/plasma/是用户的
-   把解压出的 com.github.vinceliuice.McMojave 复制进/usr/share/plasma/look-and-feel/
+说明根目录在`(hd0,gpt8)`
 
 ```bash
-sudo pacman -S latte-dock
+grub rescue> set prefix=(hd0,gpt8)/boot/grub
+grub rescue> set root=(hd0,gtp8)
+# 启动 normal 模块
+grub rescue> insmod normal
+grub rescue> normal
+# 接着就会进入启动选择菜单
 ```
 
-- 系统设置->全局主题 选择 `McMojave-light`
-- Plasma 样式选择`亮色微风`
-- 应用程序风格->窗口装饰，选择 Breezemite，并且在`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`以调节边框大小
-  ```
-  PaddingBottom=68
-  PaddingLeft=60
-  PaddingRight=60
-  PaddingTop=30
-  ```
-- 颜色选择`McMojaveLight`
-- 图标使用`McMojave-circle`
+```bash
+# 查看 /boot/efi 是在那个设备上
+df
+# 如果在 /dev/sda2
+sudo grub-install /dev/sda2
+```

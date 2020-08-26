@@ -30,11 +30,12 @@
   "editor.suggest.snippetsPreventQuickSuggestions": false,
   "editor.formatOnType": true,
   "editor.formatOnSave": true,
-  "editor.fontFamily": "FiraCode Nerd Font, Noto Sans CJK SC", // 第二个是思源黑体，应该
+  "editor.fontFamily": "FiraCode NF, FiraCode Nerd Font, Noto Sans CJK SC, 微软雅黑",
   "editor.fontSize": 15,
   "editor.renderControlCharacters": true,
   "editor.minimap.maxColumn": 80,
   "editor.selectionClipboard": false,
+  "editor.fontLigatures": true,
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "files.autoGuessEncoding": true,
@@ -74,13 +75,16 @@
   //"markdown.preview.lineHeight": 1.1,
   "markdown.preview.fontFamily": "FiraCode Nerd Font, Noto Sans CJK SC",
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.detectIndentation": false,
+    "editor.fontFamily": "Sarasa Mono SC, FiraCode NF Light, FiraCode Nerd Font", // 更纱黑体，包含中英文的表格可以对齐
+    "editor.tabSize": 2
   },
   "svn.path": "D:/msys64/usr/bin/svn.exe",
   "svn.diff.withHead": false,
-  "terminal.integrated.fontFamily": "FiraCode Nerd Font", // https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
+  "terminal.integrated.fontFamily": "FiraCode NF Light, FiraCode Nerd Font, Noto Sans CJK SC, 微软雅黑", // https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
   "terminal.integrated.fontSize": 15,
-  "terminal.integrated.shell.windows": "D:/msys64/usr/bin/bash.exe", // 使用msys2的bash
+  //"terminal.integrated.shell.windows": "D:/msys64/usr/bin/bash.exe", // 使用msys2的bash
   //"terminal.integrated.shell.windows": "wsl.exe",
   "terminal.integrated.scrollback": 2000,
   "todo-tree.highlights.defaultHighlight": {
@@ -101,7 +105,10 @@
       "editorGroupHeader.noTabsBackground": "#a7b2d5",
       "editorGroupHeader.tabsBackground": "#a7b2d5"
     }
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
   //"http.proxy": "socks5://127.0.0.1:7890",
-  //"http.proxyStrictSSL": false,
+  //"http.proxyStrictSSL": false
 }

@@ -8,6 +8,14 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+export PATH="$PATH:/mnt/e/Program Files/Microsoft VS Code/bin"
+# rust国内镜像，更多见https://blog.csdn.net/xiangxianghehe/article/details/105874880
+export RUSTUP_DIST_SERVER=https://mirrors.sjtug.sjtu.edu.cn/rust-static
+export RUSTUP_UPDATE_ROOT=https://mirrors.sjtug.sjtu.edu.cn/rust-static/rustup
+# add a if else , if the user is hyuuko, source the cargoenv
+if [ "$(whoami)" = "hyuuko" ]; then source ~/.cargo/env ; fi
+# 用来rustup补全，要放在 compinit 之前
+fpath+=~/.zfunc
 
 ## Options section
 setopt correct                                                  # Auto correct mistakes

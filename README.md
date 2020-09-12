@@ -57,6 +57,8 @@ timedatectl timesync-status   # 查看 NTP 的状态
 ```bash
 # 换源，如果有的话，建议用自己学校的
 echo 'Server = https://repo.huaweicloud.com/manjaro/stable/$repo/$arch' > /etc/pacman.d/mirrorlist
+echo 'Server = https://mirrors.cloud.tencent.com/manjaro/stable/$repo/$arch' >> /etc/pacman.d/mirrorlist
+echo 'Server = http://mirrors.cqu.edu.cn/manjaro/stable/$repo/$arch' >> /etc/pacman.d/mirrorlist
 ```
 
 然后添加 archlinuxcn 源，`nano /etc/pacman.conf`，取消`#Color`的注释以启用彩色输出，然后在文件末尾加上：
@@ -82,7 +84,7 @@ su
 pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code adobe-source-han-sans-cn-fonts \
 fcitx5-chinese-addons fcitx5 fcitx5-gtk fcitx5-qt fcitx5-rime fcitx5-material-color \
 v2ray qv2ray qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan \
-archlinuxcn/visual-studio-code-bin archlinuxcn/google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei
+visual-studio-code-bin google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei tree
 
 # yay 换源
 yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
@@ -135,18 +137,25 @@ Shift_L,   Down, Shift_L|Button5
 
 ### proxychains
 
-`vim /etc/proxychains.conf`，将 proxy_dns 这一行注释。（这样能够让 proxychains 代理 yay），并且将最后一行的 `socks4 127.0.0.1 9095` 修改为 `socks5 127.0.0.1 7890`
+`vim /etc/proxychains.conf`
+
+- 取消 `quiet_mode` 的注释
+- 并且将最后一行的 `socks4 127.0.0.1 9095` 修改为 `socks5 127.0.0.1 7890` 和 `http 127.0.0.1 7891`
+- 代理 yay 的方法
+  - `export http_proxy=socks5://127.0.0.1:7890 && export https_proxy=socks5://127.0.0.1:7890`
+  - 如果要用 proxychains 则需要使用 gcc-go 重新编译 yay 和 proxychains
 
 ### qv2ray
 
 请注意一定要同步好系统时间以及详读[qv2ray 文档](https://qv2ray.net/)
 
 1. 打开 qv2ray，启用 ssr 插件，点击插件，如果 ssr 未勾选则需要勾选再重启 qv2ray
-2. 并且首选项->内核设置：v2ray 核心可执行文件路径改成`/usr/bin/v2ray`，然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作
-3. 入站设置里设置好端口并且勾选`设置系统代理`。监听地址设置为`0.0.0.0`可以让局域网的其他电脑连接。
-4. 连接设置里勾选`绕过中国大陆`
-5. 高级路由设置里，第二行，第二列填入`geosite:geolocation-!cn`以代理所有非中国大陆的连接，第三列填入`geosite:category-ads-all`以屏蔽广告
-6. 最后，点`OK`按钮保存设置。
+2. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；界面主题选择`Breeze`（即微风）；行为那里全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
+3. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作
+4. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
+5. 连接设置。勾选`绕过中国大陆`和使用本地 DNS
+6. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
+7. 最后，点确定按钮以保存设置
 
 点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
 
@@ -156,6 +165,19 @@ pc curl -L -o /tmp/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw
 pc curl -L -o /tmp/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
 sudo cp /tmp/geoip.dat /usr/lib/v2ray && rm /tmp/geoip.dat
 sudo cp /tmp/geosite.dat /usr/lib/v2ray && rm /tmp/geosite.dat
+```
+
+### 透明代理
+
+尝试失败。。。逃
+
+```bash
+pacman -S cgproxy-git
+sudo systemctl enable --now cgproxy.service
+sudo vim /etc/cgproxy/config.json
+# 改成 "enable_gateway": true,
+# 再重启服务
+sudo systemctl restart cgproxy.service
 ```
 
 ## google-chrome
@@ -228,19 +250,15 @@ Layout=
 0=Default
 ```
 
-`vim ~/.pam_environment`，添加：
+`vim ~/.xprofile`，添加：
 
 ```conf
-GTK_IM_MODULE=fcitx5
-QT_IM_MODULE=fcitx5
-XMODIFIERS="@im=fcitx5"
+export GTK_IM_MODULE=fcitx5
+export QT_IM_MODULE=fcitx5
+export XMODIFIERS="@im=fcitx5"
 ```
 
-`echo ${XDG_SESSION_TYPE}`，如果输出的是 x11 那就需要`vim ~/.xprofile`，添加：
-
-```bash
-fcitx5 &
-```
+然后打开系统设置->开机和关机->自动启动，添加程序 Fcitx 5
 
 注销，重新登录，Fctix 应该会自启，rime 第一次加载要花几十秒。如果有多个输入法，切换输入法的技巧是：按住 Ctrl 不动，再按 Shift。在第一次切换后，才可以直接按 Shift 切换。Shift 尽量按个 0.5 秒比较好。如果只启用了 rime 这一个输入法，用 Shift 键就可以切换中英文。
 
@@ -271,7 +289,7 @@ patch:
 
 右键右下角 Rime 的图标，点击重新部署，配置文件会生成到`~/.local/share/fcitx5/rime/build`，然后就会生效。更多配置请详细阅读[Rime 定制指南](https://github.com/rime/home/wiki/CustomizationGuide)等文档
 
-Rime 输入法在使用中会在一定时间自动将用户词典备份为快照文件`*.userdb.txt`（还没看到过）
+Rime 输入法在使用中会在一定时间自动将用户词典备份为快照文件`*.userdb.txt`
 
 接下来配置输入法皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
 
@@ -485,9 +503,46 @@ yay -S r8152-dkms
 - [ ] neovim + SpaceVim 配置 C/C++ 和 Rust
 - [ ] 休眠后无法唤醒的问题
 - [ ] 用 rust 写一个可以自动更新 mdbook 等能够从 github release 下载的软件 https://github.com/rust-lang/mdBook/releases/latest
-- [ ] 好用的下载软件，aria2？
-  - `sudo pacman -S aria2` 用法待写
-- [x] wps。`sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn`
+- [x] wps
+  ```bash
+  sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
+  yay -S ttf-ms-fonts wps-office-fonts
+  ```
+
+## aria2
+
+```bash
+sudo pacman -S aria2-fast uget
+mkdir ~/aria2
+touch ~/aria2/aria2.conf ~/aria2/aria2.session ~/aria2/aria2.log
+```
+
+[`aria2.conf`配置文件](https://gitee.com/BlauVogel/dotfiles/blob/master/manjaro-kde/aria2.conf)
+
+`sudo vim /etc/systemd/system/aria2c.service`
+
+```conf
+[Unit]
+Description=Aria2c download manager
+After=network.target
+
+[Service]
+User=hyuuko
+Type=forking
+ExecStart=/usr/bin/aria2c --conf-path=/home/hyuuko/aria2/aria2.conf -D
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable aria2c
+sudo systemctl start aria2c
+```
+
+安装插件[Aria2 for Chrome](https://chrome.google.com/webstore/detail/aria2-for-chrome/mpkodccbngfoacfalldjimigbofkhgjn)，在 AriaNg 设置里设置语言，再填好 RPC 密钥。注意：在 AriaNg 里对 Aria2 的设置是临时的，重新启动 aria2c 后这些配置就会恢复为配置文件里的
+
+别人的配置：https://github.com/P3TERX/aria2.conf
 
 ## 美化
 
@@ -529,7 +584,7 @@ fc-list | grep Sarasa # 查看字体
 - 应用程序风格
   - 应用样式。选择`微风`
   - 窗口装饰
-    - 主题。选择`Breezemite`，并且`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`修改默认配置以调节边框大小
+    - 主题。选择`Breezemite`，并且`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`修改默认配置以调节边框大小，我直接将这四行删掉了
       ```
       PaddingBottom=68
       PaddingLeft=60
@@ -567,6 +622,8 @@ fc-list | grep Sarasa # 查看字体
 
 - 按 F12 打开 Yakuake，然后右键编辑当前方案->外观，新建一个配色方案，背景透明度 20%
 
+## pacman 常见用法
+
 ## Tips
 
 - 按 F12 可以打开 Yakuake（一个快捷终端），不要点击关闭按钮，直接按 F12 或点击其他地方隐藏就行
@@ -574,6 +631,12 @@ fc-list | grep Sarasa # 查看字体
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
   - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
+- 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
+- [ ] 校园网经常掉线
+  - 目前尝试过却无效的：
+    - `sudo vim /etc/ppp/options`，`lcp-echo-failure 4`改成`lcp-echo-failure 50`
+    - `sudo pacman -S rp-pppoe`
+- 状态栏剪贴板右键->配置剪贴板->常规->勾选「忽略选区」。这样能避免鼠标选中文字时自动复制
 
 ## 修复 grub
 

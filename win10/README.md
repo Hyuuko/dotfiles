@@ -67,11 +67,15 @@ scoop update # 更新源列表以及 scoop 自身
 ```powershell
 # scoop install googlechrome-dev firefox-developer vscode geekuninstaller fluent-terminal-np snipaste windows-terminal potplayer sublime-text vagrant
 # scoop install php-nts mysql redis nodejs-lts nginx apache composer curl python go gcc
-scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer
-# 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，bandizip，potplayer
-scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python
+scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer bandizip winrar
+# 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer
+scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python ninja
 sudo scoop install FiraCode-NF FiraMono-NF
+scoop install wireshark
+sudo scoop install nmap
 ```
+
+打开 bandizip，关联文件。再打开 winrar，别关联文件，但是勾选`Integrate WinRAR into shell`和`Icons in context menus`。
 
 qv2ray 就是一个先有鸡还是先有蛋的问题了（我选择在安装 scoop 之前弄好 qv2ray，然后用 scoop 安装 qv2ray，再用 geekuninstaller 卸载原先的 qv2ray
 

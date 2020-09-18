@@ -67,7 +67,7 @@ scoop update # 更新源列表以及 scoop 自身
 ```powershell
 # scoop install googlechrome-dev firefox-developer vscode geekuninstaller fluent-terminal-np snipaste windows-terminal potplayer sublime-text vagrant
 # scoop install php-nts mysql redis nodejs-lts nginx apache composer curl python go gcc
-scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer bandizip winrar
+scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer bandizip winrar sumatrapdf
 # 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer
 scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python ninja
 sudo scoop install FiraCode-NF FiraMono-NF

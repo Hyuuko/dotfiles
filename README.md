@@ -128,13 +128,6 @@ Shift_L,   Down, Shift_L|Button5
 
 ## 设置代理
 
-- [CNIX](https://ntt-co-jp.club/user)
-  - [v2ray](https://losadhwselfff2332dasd.xyz/link/SOdtuGDK3mVQFjBV?sub=3)
-  - [ssr](https://losadhwselfff2332dasd.xyz/link/SOdtuGDK3mVQFjBV?sub=1)
-  - [clash](https://losadhwselfff2332dasd.xyz/link/SOdtuGDK3mVQFjBV?clash=1)
-- [OVO](https://v2.qovoq.ml/#/dashboard)
-  - [trojan](http://ovo.dy.cdn.llsmall.com/api/v1/client/subscribe?token=b3ce1c807ec9d3532ee57d1994ec1d2d)
-
 ### proxychains
 
 `vim /etc/proxychains.conf`
@@ -317,6 +310,8 @@ PreeditInApplication=True
 
 ## Rust
 
+### 安装及配置 Rust
+
 注：有很多已经在`.zshrc`里设置了，比如环境变量等等，此处就不再重复了。
 
 ```bash
@@ -362,6 +357,11 @@ registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
 [source.rustcc]
 registry = "git://crates.rustcc.cn/crates.io-index"
 ```
+
+### VSCode Rust 插件
+
+- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer)
+- [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
 
 ## C/C++
 
@@ -472,7 +472,8 @@ sudo pacman -S netease-cloud-music
   点击左上的加号新建一个 Password keyring，密码为空，然后将其设置为默认
 - chrome 设置字体，宽度固定的字体（即 monospace），改为 FiraCode Nerd Font Mono
 - [Linux 开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
-  注：这部分建议在 hyuuko 用户进行。先使用 `sudo fdisk -l` 查看存储空间，找到我们想要自动挂载的那个设备，比如我这里是 `/dev/sda2`，文件系统是 ntfs，然后使用 `sudo blkid /dev/sda2` 查看设备的 UUID，我这里是 0E95-06C4，然后使用`id`命令查看 hyuuko 用户的 uid 和 gid，我们就可以 `sudo vim /etc/fstab`，在文件末尾添加：`UUID=0E95-06C4 /mnt/SHARE vfat uid=1000,gid=1001,umask=000 0 0`。接下来我们可以先 `sudo mkdir /mnt/SHARE` 再 `sudo mount -a` 来挂载 fstab 中的所有文件系统（先确保你想要挂载的设备还没有挂载上去），之后用 `df -h` 命令查看是否挂载成功。
+  注：这部分建议在 hyuuko 用户进行。先使用 `sudo fdisk -l` 查看存储空间，找到我们想要自动挂载的那个设备，比如我这里是 `/dev/sda2`，文件系统是 exfat，然后使用 `sudo blkid /dev/sda2` 查看设备的 UUID，我这里是 0E95-06C4，然后使用`id`命令查看 hyuuko 用户的 uid 和 gid，我们就可以 `sudo vim /etc/fstab`，在文件末尾添加：`UUID=0E95-06C4 /mnt/SHARE exfat uid=1000,gid=1001,umask=000 0 0`。接下来我们可以先 `sudo mkdir /mnt/SHARE` 再 `sudo mount -a` 来挂载 fstab 中的所有文件系统（先确保你想要挂载的设备还没有挂载上去），之后用 `df -h` 命令查看是否挂载成功。
+  - 注意：如果文件系统是 ext4，不支持 mount 时设置 uid 和 gid，所以需要将刚才的改成：`UUID=157ee4d6-833f-4f22-84c8-b297c07085af /mnt/Share ext4 defaults,noatime 0 0`，然后 `sudo mount -a` `sudo chown hyuuko:hyuuko /mnt/Share`
 - 安装 mdbook，不想使用 `cargo install mdbook` 来编译，可以直接在[release](https://github.com/rust-lang/mdBook/releases/latest)下载最新版的，然后解压至 `~/.cargo/bin`
 
 ### vscode 登录账号的问题
@@ -508,6 +509,7 @@ yay -S r8152-dkms
   sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
   yay -S ttf-ms-fonts wps-office-fonts
   ```
+- [ ] 尝试一下 [vscode-dev-containers 对于 Rust 的配置](https://github.com/microsoft/vscode-dev-containers/blob/master/containers/codespaces-linux/.devcontainer/library-scripts/rust-debian.sh)
 
 ## aria2
 

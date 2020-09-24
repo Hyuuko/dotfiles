@@ -8,10 +8,9 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export PATH="$PATH:/mnt/e/Program Files/Microsoft VS Code/bin"
+# export PATH="$PATH:/mnt/e/Program Files/Microsoft VS Code/bin"
 # rust国内镜像，更多见https://blog.csdn.net/xiangxianghehe/article/details/105874880
-export RUSTUP_DIST_SERVER=https://mirrors.sjtug.sjtu.edu.cn/rust-static
-export RUSTUP_UPDATE_ROOT=https://mirrors.sjtug.sjtu.edu.cn/rust-static/rustup
+RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
 # add a if else , if the user is hyuuko, source the cargoenv
 if [ "$(whoami)" = "hyuuko" ]; then source ~/.cargo/env ; fi
 # 用来rustup补全，要放在 compinit 之前
@@ -118,3 +117,13 @@ alias cat='bat --style=plain'
 alias vim='nvim'
 alias pc='proxychains4 -q'
 alias sudo='sudo ' # 这样可以让 sudo 后面跟其他 alias
+# 用来手动开关代理，建议走 http 协议，因为 wget 不支持 socks5
+# 而且用 socks5 协议时，qv2ray 只能根据 ip 来分发流量的（有时不怎么准
+my_proxy=http://127.0.0.1:7891
+alias p-on='export all_proxy='${my_proxy}' http_proxy='${my_proxy}' https_proxy='${my_proxy}''
+alias p-off='unset all_proxy http_proxy https_proxy'
+p-on
+# 以 sudo 权限打开 vscode
+alias CODE='sudo code --user-data-dir="/home/hyuuko/.vscode-root"'
+# 关闭 .net 遥测
+export DOTNET_CLI_TELEMETRY_OPTOUT=1

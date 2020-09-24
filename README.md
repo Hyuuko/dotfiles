@@ -67,6 +67,8 @@ chattr +i /etc/pacman.d/mirrorlist
 
 ```conf
 [archlinuxcn]
+# 建议用自己学校的
+# Server = https://mirrors.cqu.edu.cn/archlinuxcn/$arch
 Server = https://mirrors.cloud.tencent.com/archlinuxcn/$arch
 ```
 
@@ -204,10 +206,12 @@ su
 pacman -S zsh-theme-powerlevel10k
 # 从 gitee 克隆配置文件（用 git 协议进行 git push 时不需要输入用户名和密码）
 git clone git@gitee.com:BlauVogel/dotfiles.git && cd dotfiles
-rm /home/hyuuko/.p10k.zsh /root/.p10k.zsh
+rm /home/hyuuko/.p10k.zsh/root/.p10k.zsh  /home/hyuuko/.zshrc /root/.zshrc
 # 再创建软链接（请确保此时是在 dotfiles 目录中！）（直接复制也行）
 ln -s $(pwd)/manjaro-kde/.p10k.zsh /home/hyuuko/.p10k.zsh
 ln -s $(pwd)/manjaro-kde/.p10k.zsh /root/.p10k.zsh
+ln -s $(pwd)/manjaro-kde/.zshrc /home/hyuuko/.zshrc
+ln -s $(pwd)/manjaro-kde/.zshrc /root/.zshrc
 # 最后设置一下默认shell，将 root 用户和 hyuuko 用户的 /bin/bash 改为 /bin/zsh
 nvim /etc/passwd
 ```
@@ -731,3 +735,22 @@ df
 # 如果在 /dev/sda2
 sudo grub-install /dev/sda2
 ```
+
+### .NET
+
+[.NET Core - ArchWiki](<https://wiki.archlinux.org/index.php/.NET_Core_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
+```bash
+sudo pacman -S --needed dotnet-sdk aspnet-targeting-pack
+# 关闭遥测
+echo 'export DOTNET_CLI_TELEMETRY_OPTOUT=1' >> ~/.zshrc
+```
+
+VSCode 插件：
+
+- `C#`
+
+参考：
+
+- [Using .NET Core in Visual Studio Code](https://code.visualstudio.com/docs/languages/dotnet)
+- [使用 Visual Studio Code 开发.NET Core 看这篇就够了](https://www.cnblogs.com/yilezhu/p/9926078.html)

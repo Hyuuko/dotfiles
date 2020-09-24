@@ -56,9 +56,11 @@ timedatectl timesync-status   # 查看 NTP 的状态
 
 ```bash
 # 换源，如果有的话，建议用自己学校的
+# echo 'Server = http://mirrors.cqu.edu.cn/manjaro/stable/$repo/$arch' > /etc/pacman.d/mirrorlist
 echo 'Server = https://repo.huaweicloud.com/manjaro/stable/$repo/$arch' > /etc/pacman.d/mirrorlist
 echo 'Server = https://mirrors.cloud.tencent.com/manjaro/stable/$repo/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://mirrors.cqu.edu.cn/manjaro/stable/$repo/$arch' >> /etc/pacman.d/mirrorlist
+# 添加写保护，防止被修改
+chattr +i /etc/pacman.d/mirrorlist
 ```
 
 然后添加 archlinuxcn 源，`nano /etc/pacman.conf`，取消`#Color`的注释以启用彩色输出，然后在文件末尾加上：
@@ -455,10 +457,14 @@ sudo pacman -S piper
 
 ## 其他软件
 
-### 网抑云
+### 国产软件
 
 ```bash
+# 网抑云
 sudo pacman -S netease-cloud-music
+# WPS
+sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
+yay -S ttf-ms-fonts wps-office-fonts
 ```
 
 ## other
@@ -498,17 +504,65 @@ yay -S r8152-dkms
 
 这下应该没问题了
 
+### 校园网
+
+由于使用学校提供的客户端经常掉线，故选择使用 dogcom。
+
+在 windows 上使用学校提供的客户端，在登录前用 wireshark 开始截包，保存文件。接着下载[配置文件生成器](https://raw.githubusercontent.com/drcoms/generic/master/drcom_d_config.py)，将其与第一步的截包文件放到同一个目录下，并且将 `filename = '3.pcapng'` 中的 `3.pcapng` 改为第一步保存的文件名。接着 `python2 drcom_d_config.py > dhcp.conf`。我得到的内容为：
+
+```conf
+server = '202.1.1.1'
+username='20180000'
+password=''
+CONTROLCHECKSTATUS = '\x00'
+ADAPTERNUM = '\x00'
+host_ip = '10.234.115.42'
+IPDOG = '\x01'
+host_name = 'GILIGILIEYE'
+PRIMARY_DNS = '0.0.0.0'
+dhcp_server = '0.0.0.0'
+AUTH_VERSION = '\x30\x00'
+mac = 0x00e04d69741b
+host_os = 'NOTE7'
+KEEP_ALIVE_VERSION = '\xdc\x02'
+ror_version = False
+```
+
+需要将 `password` 改为你自己的、更改 `PRIMARY_DNS`，并且添加 `keepalive1_mod`：
+
+```conf
+server = '202.1.1.1'
+username='20180000'
+password='666666'
+CONTROLCHECKSTATUS = '\x00'
+ADAPTERNUM = '\x00'
+host_ip = '10.234.115.42'
+IPDOG = '\x01'
+host_name = 'GILIGILIEYE'
+PRIMARY_DNS = '114.114.114.114'
+dhcp_server = '0.0.0.0'
+AUTH_VERSION = '\x30\x00'
+mac = 0x00e04d69741b
+host_os = 'NOTE7'
+KEEP_ALIVE_VERSION = '\xdc\x02'
+ror_version = False
+keepalive1_mod = True
+```
+
+在 linux 中，先 `yay -S dogcom-git` 安装 dogcom，然后将 `/etc/drcom.d/dhcp.conf` 修改成上面的样子，最后启用 dogcom 服务：
+
+```bash
+sudo systemctl enable --now dogcom-d
+# 查看状态，如果显示 Active: active (running)，则说明成功了
+systemctl status dogcom-d
+```
+
+参考：[Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
 ## TODO
 
-- [ ] 校园网[Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 - [ ] neovim + SpaceVim 配置 C/C++ 和 Rust
 - [ ] 休眠后无法唤醒的问题
-- [ ] 用 rust 写一个可以自动更新 mdbook 等能够从 github release 下载的软件 https://github.com/rust-lang/mdBook/releases/latest
-- [x] wps
-  ```bash
-  sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
-  yay -S ttf-ms-fonts wps-office-fonts
-  ```
 - [ ] 尝试一下 [vscode-dev-containers 对于 Rust 的配置](https://github.com/microsoft/vscode-dev-containers/blob/master/containers/codespaces-linux/.devcontainer/library-scripts/rust-debian.sh)
 
 ## aria2
@@ -634,10 +688,6 @@ fc-list | grep Sarasa # 查看字体
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
   - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
-- [ ] 校园网经常掉线
-  - 目前尝试过却无效的：
-    - `sudo vim /etc/ppp/options`，`lcp-echo-failure 4`改成`lcp-echo-failure 50`
-    - `sudo pacman -S rp-pppoe`
 - 状态栏剪贴板右键->配置剪贴板->常规->勾选「忽略选区」。这样能避免鼠标选中文字时自动复制
 
 ## 修复 grub

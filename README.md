@@ -493,12 +493,15 @@ sudo pacman -S gnome-keyring
 
 密钥环密码空白就行
 
-### USB 网卡 Tx timeout 错误导致断网
+### r8152 网卡 Tx timeout 错误导致断网
 
 https://aur.archlinux.org/packages/r8152-dkms/
 
 ```bash
-pacman -S --needed linux56-headers # 必须要有这个
+# 先查看内核版本
+uname -a
+# 安装对应的 headers，我的内核版本为 5.8，故安装 linux58-headers
+pacman -S --needed linux58-headers
 yay -S r8152-dkms
 ```
 
@@ -506,7 +509,7 @@ yay -S r8152-dkms
 
 ### 校园网
 
-由于使用学校提供的客户端经常掉线，故选择使用 dogcom。
+学校提供的 linux 版客户端经常掉线，故选择使用 dogcom。
 
 在 windows 上使用学校提供的客户端，在登录前用 wireshark 开始截包，保存文件。接着下载[配置文件生成器](https://raw.githubusercontent.com/drcoms/generic/master/drcom_d_config.py)，将其与第一步的截包文件放到同一个目录下，并且将 `filename = '3.pcapng'` 中的 `3.pcapng` 改为第一步保存的文件名。接着 `python2 drcom_d_config.py > dhcp.conf`。我得到的内容为：
 
@@ -533,7 +536,7 @@ ror_version = False
 ```conf
 server = '202.1.1.1'
 username='20180000'
-password='666666'
+password='114514'
 CONTROLCHECKSTATUS = '\x00'
 ADAPTERNUM = '\x00'
 host_ip = '10.234.115.42'

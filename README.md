@@ -86,8 +86,8 @@ pacman -Syu                         # 系统更新
 # 为了方便就全写一起了
 su
 pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code adobe-source-han-sans-cn-fonts \
-fcitx5-chinese-addons fcitx5 fcitx5-gtk fcitx5-qt fcitx5-rime fcitx5-material-color \
-v2ray qv2ray qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan \
+fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl} \
+v2ray qv2ray qv2ray-plugin-{ssr-dev-git,trojan} \
 visual-studio-code-bin google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei tree
 
 # yay 换源
@@ -222,73 +222,31 @@ zshrc 复制一下就好，注销后再登录
 
 参考：
 
-- [在 Manjaro 上优雅地使用 Fcitx5](https://www.wannaexpresso.com/2020/03/26/fcitx5/)
-- [RIME 使用说明](https://github.com/rime/home/wiki/UserGuide)
-- [Linux 下 Rime 输入法配置记录](http://einverne.github.io/post/2014/11/rime.html)
+- [Fcitx5 (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fcitx5_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
-先不要打开 Fcitx！修改配置文件 ~/.config/fcitx5/profile 时，请务必退出 fcitx5 输入法，否则会因为输入法退出时会覆盖配置文件导致之前的修改被覆盖，修改其他配置文件可以不用退出 fcitx5 输入法，只需右键图标，点击重新部署即可生效
-
-`vim ~/.config/fcitx5/profile` 添加以下内容
+`vim ~/.pam_environment`，添加：
 
 ```conf
-[Groups/0]
-# Group Name
-Name=Default
-# Layout
-Default Layout=us
-# Default Input Method
-DefaultIM=rime
-
-[Groups/0/Items/0]
-# Name
-Name=rime
-# Layout
-Layout=
-
-[GroupOrder]
-0=Default
+INPUT_METHOD  DEFAULT=fcitx5
+GTK_IM_MODULE DEFAULT=fcitx5
+QT_IM_MODULE  DEFAULT=fcitx5
+XMODIFIERS    DEFAULT=\@im=fcitx5
 ```
 
-`vim ~/.xprofile`，添加：
-
-```conf
-export GTK_IM_MODULE=fcitx5
-export QT_IM_MODULE=fcitx5
-export XMODIFIERS="@im=fcitx5"
+```bash
+# 设置自启动，复制到 /etc/xdg/autostart/ 应该也可
+cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
 ```
 
-然后打开系统设置->开机和关机->自动启动，添加程序 Fcitx 5
-
-注销，重新登录，Fctix 应该会自启，rime 第一次加载要花几十秒。如果有多个输入法，切换输入法的技巧是：按住 Ctrl 不动，再按 Shift。在第一次切换后，才可以直接按 Shift 切换。Shift 尽量按个 0.5 秒比较好。如果只启用了 rime 这一个输入法，用 Shift 键就可以切换中英文。
-
-接下来配置 rime，`vim ~/.local/share/fcitx5/rime/default.custom.yaml`以编辑自定义默认设置：
-
-```yaml
-# 如果没生效，可能是配置格式错了
-patch:
-  switcher/hotkeys:
-    # 使用 / 符号表明只改变hotkeys这一个选项
-    # 否则会将整个 switcher 下的所有选项一起改变
-    - F4
-  menu/page_size: 9
-  schema_list:
-    # 把luna_pinyin_simp放在第一个，这样就默认简体
-    - schema: luna_pinyin_simp
-    - schema: luna_pinyin
-    - schema: luna_pinyin_fluency
-  ascii_composer/switch_key/Shift_L: commit_code # 按左Shift时将已输入的字符上屏并且切换至英文
-```
-
-然后`vim ~/.local/share/fcitx5/rime/luna_pinyin_simp.custom.yaml`以编辑朙月拼音-简化字的设置：
-
-```yaml
-patch:
-  "switches/@0/reset": 1 # 默认英文
-```
-
-右键右下角 Rime 的图标，点击重新部署，配置文件会生成到`~/.local/share/fcitx5/rime/build`，然后就会生效。更多配置请详细阅读[Rime 定制指南](https://github.com/rime/home/wiki/CustomizationGuide)等文档
-
-Rime 输入法在使用中会在一定时间自动将用户词典备份为快照文件`*.userdb.txt`
+- 打开 Fcitx 5 配置
+  - 输入法只留下`键盘-英语（美国）`和`拼音`
+  - `配置配置全局选项`
+    - `切换启用/禁用输入法`将 `Ctrl+Space` 改为左 `Shfit`
+  - `拼音设置`
+    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键、快速输入的快捷键`Escape`
+    - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
+  - `附加组件->云拼音`
+    - 最小拼音长度`2`；后端`Baidu`
 
 接下来配置输入法皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
 
@@ -298,21 +256,12 @@ Vertical Candidate List=False
 # 按屏幕 DPI 使用
 PerScreenDPI=True
 # Font (设置成你喜欢的字体)
-Font="思源黑体 CN Medium 12"
+Font="思源黑体 CN Medium 11"
 # 主题
 Theme=Material-Color-Blue
 ```
 
-然后设置单行模式，`vim ~/.config/fcitx5/conf/rime.conf`，添加：
-
-```conf
-# 可用时在应用程序中显示预编辑文本
-PreeditInApplication=True
-```
-
-右键右下角 Rime 的图标，点击重新启动，就会生效了
-
-另外可以看看这个[深蓝词库转换软件](https://github.com/studyzy/imewlconverter)，将 Win10 微软拼音自学习词库转换成 Rime 的词库
+另外可以看看这个[深蓝词库转换软件](https://github.com/studyzy/imewlconverter)
 
 ## Rust
 
@@ -690,12 +639,15 @@ fc-list | grep Sarasa # 查看字体
 ## Tips
 
 - 按 F12 可以打开 Yakuake（一个快捷终端），不要点击关闭按钮，直接按 F12 或点击其他地方隐藏就行
-- Alt+Space 或者直接在桌面输入字符就可打开 KRunner
+- Alt+Space 或者直接在桌面输入字符就可打开 KRunner（可以用来搜索应用程序、书签等）
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
   - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
 - 状态栏剪贴板右键->配置剪贴板->常规->勾选「忽略选区」。这样能避免鼠标选中文字时自动复制
+- 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
+- 感觉自带的 `KDE 分区管理器` 比 `GParted` 更好用，打开 `KDE 分区管理器`，编辑每个分区的标签
+- VSCode 删除（移动进回收站） ext4 文件系统中的文件时，会卡顿。解决办法：`echo 'export ELECTRON_TRASH=gio' > ~/.config/plasma-workspace/env/electron-trash-gio.sh`，然后注销，重新登录。（我感觉并没有太大的改善，建议直接 shift+delete 彻底删除
 
 ## 修复 grub
 

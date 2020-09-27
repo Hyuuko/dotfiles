@@ -29,27 +29,19 @@
 
 参考：[同步 Linux 双系统的时间](https://mogeko.me/2019/062/)
 
+`nano /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
+
+```
+NTP=time1.aliyun.com time2.aliyun.com time3.aliyun.com time4.aliyun.com time5.aliyun.com
+```
+
 ```bash
 su
 timedatectl list-timezones              # 列出所有时区
 timedatectl set-timezone Asia/Shanghai  # 设置时区
-timedatectl set-local-rtc true          # 设置为RTC（BIOS时间）
-date                                    # 查看时间
-# 如果时间还不正常，说明是BIOS时间错了，需要重启按F2,修改BIOS时间
+timedatectl set-ntp true                # 启用 NTP
 timedatectl status  # 查看状态，如果 RTC 与 CST 相同就说明设置成功了
-```
-
-接下来启用 NTP 自动对时，`nano /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
-
-```
-NTP=time1.aliyun.com time2.aliyun.com time3.aliyun.com time4.aliyun.com time5.aliyun.com time6.aliyun.com time7.aliyun.com
-```
-
-然后：
-
-```bash
-timedatectl set-ntp true      # 启动 NTP
-timedatectl timesync-status   # 查看 NTP 的状态
+date                                    # 查看时间
 ```
 
 ## 换源
@@ -88,7 +80,8 @@ su
 pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code adobe-source-han-sans-cn-fonts \
 fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl} \
 v2ray qv2ray qv2ray-plugin-{ssr-dev-git,trojan} \
-visual-studio-code-bin google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei tree
+visual-studio-code-bin google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei tree \
+telegram-desktop flameshot
 
 # yay 换源
 yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
@@ -241,7 +234,7 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
 - 打开 Fcitx 5 配置
   - 输入法只留下`键盘-英语（美国）`和`拼音`
   - `配置配置全局选项`
-    - `切换启用/禁用输入法`将 `Ctrl+Space` 改为左 `Shfit`
+    - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
   - `拼音设置`
     - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键、快速输入的快捷键`Escape`
     - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
@@ -596,7 +589,7 @@ fc-list | grep Sarasa # 查看字体
 - 应用程序风格
   - 应用样式。选择`微风`
   - 窗口装饰
-    - 主题。选择`Breezemite`，并且`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`修改默认配置以调节边框大小，我直接将这四行删掉了
+    - 主题。选择`Breezemite`，并且`nvim ~/.local/share/aurorae/themes/Breezemite/Breezemiterc`修改默认配置以调节边框大小，我直接将这四行注释掉了
       ```
       PaddingBottom=68
       PaddingLeft=60

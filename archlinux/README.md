@@ -1,3 +1,58 @@
+目录
+
+- [部分参考资料](#部分参考资料)
+  - [ArchWiki](#archwiki)
+  - [博客、知乎等](#博客知乎等)
+- [前期准备](#前期准备)
+- [安装前的准备](#安装前的准备)
+  - [启动到 Live 环境](#启动到-live-环境)
+  - [验证启动模式](#验证启动模式)
+  - [连接到因特网](#连接到因特网)
+  - [更新系统时间](#更新系统时间)
+  - [建立硬盘分区](#建立硬盘分区)
+  - [格式化分区](#格式化分区)
+  - [挂载分区](#挂载分区)
+- [安装](#安装)
+  - [更换镜像源](#更换镜像源)
+  - [安装必须的软件包](#安装必须的软件包)
+- [配置系统](#配置系统)
+  - [Fstab](#fstab)
+  - [Chroot](#chroot)
+  - [时区](#时区)
+  - [本地化](#本地化)
+  - [网络配置](#网络配置)
+  - [设置 Root 密码](#设置-root-密码)
+  - [安装引导程序](#安装引导程序)
+  - [重启进入安装好了的 Arch Linux](#重启进入安装好了的-arch-linux)
+- [安装后的工作](#安装后的工作)
+  - [联网并添加 archlinuxcn 源](#联网并添加-archlinuxcn-源)
+  - [创建交换文件](#创建交换文件)
+  - [新建用户](#新建用户)
+  - [显卡和图形界面](#显卡和图形界面)
+  - [字体](#字体)
+  - [输入法和皮肤](#输入法和皮肤)
+  - [代理软件](#代理软件)
+  - [透明代理](#透明代理)
+  - [zsh](#zsh)
+  - [git](#git)
+  - [其他软件](#其他软件)
+  - [美化](#美化)
+    - [系统设置](#系统设置)
+    - [面板](#面板)
+- [其他](#其他)
+  - [调整鼠标滚轮速度](#调整鼠标滚轮速度)
+  - [校园网](#校园网)
+- [一些问题](#一些问题)
+  - [vscode 登录账号的问题](#vscode-登录账号的问题)
+  - [r8152 网卡 Tx timeout 错误断网](#r8152-网卡-tx-timeout-错误断网)
+- [Tips](#tips)
+- [开发环境配置](#开发环境配置)
+  - [Docker](#docker)
+  - [Rust](#rust)
+  - [C/C++](#cc)
+  - [Node.js](#nodejs)
+  - [VMware](#vmware)
+
 ## 部分参考资料
 
 ### ArchWiki
@@ -587,43 +642,6 @@ Shift_L,   Down, Shift_L|Button5
 
 然后运行`imwheel`命令来生效。最后，打开系统设置->会话和启动->应用程序自启动->添加->命令：`/usr/bin/imwheel`
 
-## 一些问题
-
-- 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
-- VSCode 删除（移动进回收站） ext4 文件系统中的文件时，会卡顿。解决办法：`echo 'export ELECTRON_TRASH=gio' > ~/.config/plasma-workspace/env/electron-trash-gio.sh`，然后注销，重新登录。（我感觉并没有太大的改善，建议直接 shift+delete 彻底删除
-- 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
-- 系统负荷查看器
-  - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
-  - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
-- 刚安装的软件有时会出现没在应用程序菜单里显示的问题，解决办法：打开系统设置，切换一下图标，然后看看有没有显示出来，再切换回去，来回几次，就有了
-
-### vscode 登录账号的问题
-
-Writing login information to the keychain failed with error 'The name org.freedesktop.secrets was not provided by any .service files'.
-https://github.com/MicrosoftDocs/live-share/issues/224
-
-```bash
-sudo pacman -S gnome-keyring
-```
-
-密钥环密码空白就行
-
-### r8152 网卡 Tx timeout 错误断网
-
-https://aur.archlinux.org/packages/r8152-dkms/
-
-```bash
-# 先查看内核版本
-uname -a
-# 安装对应的 headers，我的内核版本为 5.8，故安装 linux58-headers
-pacman -S --needed linux58-headers
-yay -S r8152-dkms
-```
-
-这下应该没问题了
-
-## 其他
-
 ### 校园网
 
 - [Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
@@ -678,6 +696,41 @@ sudo systemctl enable --now dogcom-d
 # 查看状态，如果显示 Active: active (running)，则说明成功了
 systemctl status dogcom-d
 ```
+
+## 一些问题
+
+- 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
+- VSCode 删除（移动进回收站） ext4 文件系统中的文件时，会卡顿。解决办法：`echo 'export ELECTRON_TRASH=gio' > ~/.config/plasma-workspace/env/electron-trash-gio.sh`，然后注销，重新登录。（我感觉并没有太大的改善，建议直接 shift+delete 彻底删除
+- 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
+- 系统负荷查看器
+  - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
+  - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
+- 刚安装的软件有时会出现没在应用程序菜单里显示的问题，解决办法：打开系统设置，切换一下图标，然后看看有没有显示出来，再切换回去，来回几次，就有了
+
+### vscode 登录账号的问题
+
+Writing login information to the keychain failed with error 'The name org.freedesktop.secrets was not provided by any .service files'.
+https://github.com/MicrosoftDocs/live-share/issues/224
+
+```bash
+sudo pacman -S gnome-keyring
+```
+
+密钥环密码空白就行
+
+### r8152 网卡 Tx timeout 错误断网
+
+https://aur.archlinux.org/packages/r8152-dkms/
+
+```bash
+# 先查看内核版本
+uname -a
+# 安装对应的 headers，我的内核版本为 5.8，故安装 linux58-headers
+pacman -S --needed linux58-headers
+yay -S r8152-dkms
+```
+
+这下应该没问题了
 
 ## Tips
 

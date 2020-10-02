@@ -696,3 +696,115 @@ systemctl status dogcom-d
 - [Linux 开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
   注：这部分建议在 hyuuko 用户进行。先使用 `sudo fdisk -l` 查看存储空间，找到我们想要自动挂载的那个设备，比如我这里是 `/dev/sda2`，文件系统是 exfat，然后使用 `sudo blkid /dev/sda2` 查看设备的 UUID，我这里是 0E95-06C4，然后使用`id`命令查看 hyuuko 用户的 uid 和 gid，我们就可以 `sudo vim /etc/fstab`，在文件末尾添加：`UUID=0E95-06C4 /mnt/SHARE exfat uid=1000,gid=1001,umask=000 0 0`。接下来我们可以先 `sudo mkdir /mnt/SHARE` 再 `sudo mount -a` 来挂载 fstab 中的所有文件系统（先确保你想要挂载的设备还没有挂载上去），之后用 `df -h` 命令查看是否挂载成功。
   - 注意：如果文件系统是 ext4，不支持 mount 时设置 uid 和 gid，所以需要将刚才的改成：`UUID=157ee4d6-833f-4f22-84c8-b297c07085af /mnt/Share ext4 defaults,noatime 0 0`，然后 `sudo mount -a` `sudo chown hyuuko:hyuuko /mnt/Share`
+
+## 开发环境配置
+
+### Docker
+
+- [Docker (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Docker_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
+```bash
+# 安装 docker
+sudo pacman -S --needed docker
+# 启动 docker
+sudo systemctl start docker
+# 或者设置开机自启并立即启动 docker
+# sudo systemctl enable --now docker.service
+# 重启 docker 服务
+sudo systemctl restart docker
+# 将当前用户加入 docker 用户组以赋予当前用户使用 docker 的权限
+sudo usermod -aG docker $USER
+```
+
+接下来配置镜像地址，先在[阿里云](https://www.aliyun.com/)注册一个帐号，然后打开控制台的[容器镜像服务](https://cr.console.aliyun.com/cn-shenzhen/instances/mirrors)，点击左侧的镜像中心->镜像加速器，就可以看到专属加速器地址，再通过修改 daemon 配置文件`/etc/docker/daemon.json` 来使用加速器
+
+```bash
+sudo mkdir -p /etc/docker
+sudo vim /etc/docker/daemon.json
+```
+
+填入：
+
+```json
+{
+  "registry-mirrors": ["https://换成你自己的.mirror.aliyuncs.com"]
+}
+```
+
+```bash
+# 重启 docker 使配置生效
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+### Rust
+
+注：换成你自己的用户名；`.zshrc`里设置了关于 rust 的环境变量等等，此处就不再重复了。
+
+```bash
+su hyuuko
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+source /usr/local/cargo/env
+sudo chown -R hyuuko:hyuuko /usr/local/rustup /usr/local/cargo
+chmod -R u+w /usr/local/rustup /usr/local/cargo
+# 安装 nightly 版工具链
+rustup toolchain install nightly
+
+mkdir ~/.zfunc
+# 启用 rustup 补全
+rustup completions zsh > ~/.zfunc/_rustup
+# 启用 cargo 补全
+rustup completions zsh cargo > ~/.zfunc/_cargo
+```
+
+接下来`vim ~/.cargo/config`填入以下内容以设置 rust crates 源
+
+```conf
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+
+# 替换成你偏好的镜像源
+replace-with = 'sjtu'
+
+# 清华大学
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+
+# 中国科学技术大学
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+
+# 上海交通大学
+[source.sjtu]
+registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
+
+# rustcc社区
+[source.rustcc]
+registry = "git://crates.rustcc.cn/crates.io-index"
+```
+
+### C/C++
+
+```bash
+pacman -S --needed gcc clang lib32-gcc-libs gdb make binutils man-pages ccls bear
+# 安装 qemu，有点大，有需要就装吧
+pacman -S --needed qemu-arch-extra
+```
+
+### Node.js
+
+```bash
+pacman -S --needed nodejs-lts-erbium yarn npm
+yarn config set registry https://registry.npm.taobao.org/ && yarn config get registry
+npm config set registry https://registry.npm.taobao.org/ && npm config get registry
+```
+
+### VMware
+
+```bash
+sudo pacman -S --needed vmware-workstation
+sudo pacman -S --needed linux56-headers
+sudo modprobe -a vmw_vmci vmmon                  # 加载内核模块
+sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
+sudo systemctl enable --now vmware-networks      # 启用虚拟机网络
+```

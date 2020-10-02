@@ -8,9 +8,11 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+export RUSTUP_HOME='/usr/local/rustup'
+export CARGO_HOME='/usr/local/cargo'
 # rust国内镜像，更多见https://blog.csdn.net/xiangxianghehe/article/details/105874880
-RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
-# if [ "$(whoami)" = "hyuuko" ]; then source ~/.cargo/env ; fi
+export RUSTUP_DIST_SERVER='https://mirrors.tuna.tsinghua.edu.cn/rustup'
+[[ ! -f /usr/local/cargo/env ]] || source /usr/local/cargo/env
 # 用来rustup补全，要放在 compinit 之前
 fpath+=~/.zfunc
 

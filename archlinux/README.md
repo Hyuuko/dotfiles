@@ -1,5 +1,3 @@
-//TODO 正确配置显卡
-
 ## 部分参考资料
 
 ### ArchWiki
@@ -325,7 +323,7 @@ passwd username
 # 禁用 nouveau
 echo 'blacklist nouveau' > /lib/modprobe.d/dist-blacklist.conf
 # 安装 nvidia 显卡
-pacman -S nvidia nvidia-dkms nvidia-utils nvidia-settings
+pacman -S nvidia nvidia-utils nvidia-settings
 # 安装 xorg 组件
 pacman -S xorg
 # 安装 KDE plasma
@@ -341,9 +339,48 @@ systemctl enable NetworkManager
 reboot
 ```
 
+### 字体
+
+- [Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [修正简体中文显示为异体（日文）字形 - ArchWiki](<https://wiki.archlinux.org/index.php/Localization_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)/Simplified_Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BF%AE%E6%AD%A3%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E4%B8%BA%E5%BC%82%E4%BD%93%EF%BC%88%E6%97%A5%E6%96%87%EF%BC%89%E5%AD%97%E5%BD%A2>)
+
+```bash
+pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-sarasa-gothic
+```
+
+接下来修正简体中文显示为异体（日文）字形，`vim ~/.fonts.conf`，写入如下内容：
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Sans CJK SC</family>
+      <family>Noto Sans CJK TC</family>
+      <family>Noto Sans CJK JP</family>
+    </prefer>
+  </alias>
+</fontconfig>
+```
+
+然后：
+
+```bash
+# 更新字体缓存即可生效
+fc-cache -fv
+# 执行以下命令检查，如果出现 NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular" 则表示设置成功
+fc-match -s | grep 'Noto Sans CJK'
+```
+
 ### 输入法和皮肤
 
 - [Fcitx5 (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fcitx5_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
+```bash
+pacman -S --needed fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl}
+```
 
 `vim ~/.pam_environment`，添加：
 
@@ -364,7 +401,7 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
   - `配置配置全局选项`
     - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
   - `拼音设置`
-    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键、快速输入的快捷键`Escape`
+    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键；快速输入的触发键双击即可改为空
     - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
   - `附加组件->云拼音`
     - 最小拼音长度`2`；后端`Baidu`
@@ -377,7 +414,7 @@ Vertical Candidate List=False
 # 按屏幕 DPI 使用
 PerScreenDPI=True
 # Font (设置成你喜欢的字体)
-Font="思源黑体 CN Medium 11"
+Font="Noto Sans CJK SC 11"
 # 主题
 Theme=Material-Color-Blue
 ```
@@ -402,6 +439,21 @@ pacman -S v2ray qv2ray
 7. 最后，点确定按钮以保存设置
 
 点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
+
+### 透明代理
+
+- [透明代理 - 百度百科](https://baike.baidu.com/item/%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86)
+
+不知道咋弄，逃。。
+
+```bash
+sudo pacman -S cgproxy-git
+sudo systemctl enable --now cgproxy.service
+sudo vim /etc/cgproxy/config.json
+# 改成 "enable_gateway": true,
+# 再重启服务
+sudo systemctl restart cgproxy.service
+```
 
 ### zsh
 
@@ -440,14 +492,26 @@ cat ~/.ssh/id_rsa.pub
 ### 其他软件
 
 ```bash
-pacman -S --needed linuxqq telegram-desktop visual-studio-code-bin google-chrome neofetch bat lolcat yay proxychains-ng tokei tree flameshot netease-cloud-music partitionmanager xf86-input-synaptics
-# 安装字体
-pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code adobe-source-han-sans-cn-fonts wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
-
+# 安装 yay
+pacman -S --needed yay
 # yay 换源
 yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
-yay -S ttf-ms-fonts wps-office-fonts
+
+# 聊天办公娱乐软件
+pacman -S --needed linuxqq telegram-desktop baidunetdisk-bin netease-cloud-music-gtk
+yay -S --needed dingtalk-electron xmind-2020
+
+# WPS 以及其部分可选依赖
+pacman -S --needed wps-office-cn wps-office-mime-cn wps-office-mui-zh-cn
+# 安装 WPS 需要的字体
+pacman -S --needed ttf-wps-fonts
+# yay -S ttf-ms-fonts wps-office-fonts
+
+# 其他软件
+pacman -S --needed visual-studio-code-bin google-chrome neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager xf86-input-synaptics
 ```
+
+- [Telegram 简体中文语言包](https://t.me/setlanguage/zhcncc)
 
 ### 美化
 
@@ -531,6 +595,7 @@ Shift_L,   Down, Shift_L|Button5
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
   - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
+- 刚安装的软件有时会出现没在应用程序菜单里显示的问题，解决办法：打开系统设置，切换一下图标，然后看看有没有显示出来，再切换回去，来回几次，就有了
 
 ### vscode 登录账号的问题
 

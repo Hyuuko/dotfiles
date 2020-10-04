@@ -76,7 +76,7 @@
 
 ### 启动到 Live 环境
 
-1. U 盘插在电脑上，在键盘亮起/屏幕微亮/快要显示出品牌图标时，按 F12（有些电脑是 F10，建议自己查一下）进入启动顺序选择界面，然后选择你的 USB。
+1. U 盘插在电脑上，在键盘亮起/屏幕微亮/快要显示出品牌图标时，（如果你之前没有关闭过 secure boot，请按 F2 进入 BIOS 设置界面，将 secure boot 禁用再来进行这一步）按 F12（有些电脑是 F10，建议自己查一下）进入启动顺序选择界面，然后选择你的 USB。
 2. 当 Arch 菜单出现时，选择 _Arch Linux install medium_ 并按 Enter 进入安装环境。
 3. 等几分钟后就会以 root 身份登录进一个显示`root@archiso ~ # `字样的虚拟控制台
 
@@ -134,17 +134,17 @@ fdisk -l
 cfdisk /dev/sda
 ```
 
-按上下键选择想要操作的分区，移动到绿色的空闲分区。然后按左右键选择所要进行的操作，选择 `[ new ]`，然后回车，输入想要分配的大小，然后再确认，再按左右键选择 `[ type ]` 来设置该分区的类型。
+按上下键选择想要操作的分区，移动到绿色的空闲分区。然后按左右键选择所要进行的操作，选择 `[ New ]`，然后回车，输入想要分配的大小，然后再确认，再按左右键选择 `[ Type ]` 来设置该分区的类型。
 
 我的分区（_swap 分区现在可以先不设置_）：
 
-|  挂载点   | 假设的设备文件 | 分区类型             |        大小        |
-| :-------: | :------------: | :------------------- | :----------------: |
+|  挂载点   | 假设的设备文件 |       分区类型       |        大小        |
+| :-------: | :------------: | :------------------: | :----------------: |
 | /mnt/boot |   /dev/sda1    | EFI system partition |   500M（足够了）   |
 |   /mnt    |   /dev/sda2    | Linux root (x86-64)  |        60G         |
-| /mnt/home |   /def/sda3    | Linux home           | 60G （剩下所有的） |
+| /mnt/home |   /def/sda3    |      Linux home      | 60G （剩下所有的） |
 
-也有人将`/mnt/boot`换成`/mnt/efi`或`/mnt/boot/efi`，其实这个随意，不过最好还是`/mnt/boot`啦~
+也有人将`/mnt/boot`换成`/mnt/efi`或`/mnt/boot/efi`，其实这个随意，不过最好还是`/mnt/boot`。分完后，按左右键选择`[ Write ]`使修改生效，再按 q 退出 cfdisk 界面。
 
 ### 格式化分区
 
@@ -714,10 +714,10 @@ systemctl status dogcom-d
 
 ### vscode 登录账号的问题
 
-Writing login information to the keychain failed with error 'The name org.freedesktop.secrets was not provided by any .service files'.
-https://github.com/MicrosoftDocs/live-share/issues/224
+> Writing login information to the keychain failed with error 'The name org.freedesktop.secrets was not provided by any .service files'.
 
 ```bash
+# https://github.com/MicrosoftDocs/live-share/issues/224
 sudo pacman -S gnome-keyring
 ```
 

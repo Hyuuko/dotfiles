@@ -3,7 +3,6 @@
 - [部分参考资料](#部分参考资料)
   - [ArchWiki](#archwiki)
   - [博客、知乎等](#博客知乎等)
-- [前期准备](#前期准备)
 - [安装前的准备](#安装前的准备)
   - [启动到 Live 环境](#启动到-live-环境)
   - [验证启动模式](#验证启动模式)
@@ -42,7 +41,7 @@
 - [其他](#其他)
   - [调整鼠标滚轮速度](#调整鼠标滚轮速度)
   - [校园网](#校园网)
-- [一些问题](#一些问题)
+- [遇到过的一些问题](#遇到过的一些问题)
   - [vscode 登录账号的问题](#vscode-登录账号的问题)
   - [r8152 网卡 Tx timeout 错误断网](#r8152-网卡-tx-timeout-错误断网)
 - [Tips](#tips)
@@ -66,20 +65,20 @@
 - [以官方 Wiki 的方式安装 ArchLinux](https://www.viseator.com/2017/05/17/arch_install/)
 - [ArchLinux 安装后的必须配置与图形界面安装教程](https://www.viseator.com/2017/05/19/arch_setup/)
 
-## 前期准备
-
-1. 从[华为云的 Arch Linux 镜像](https://mirrors.huaweicloud.com/archlinux/iso/latest/)下载 `archlinux-版本日期-x86_64.iso` 镜像文件（[镜像站列表](https://www.archlinux.org/download/#download-mirrors)）
-2. 准备一个 1G 大小以上 U 盘（能装得下 archlinux 的镜像文件就行，如果没 U 盘，可以试试在手机上用 DriveDroid 模拟 U 盘）
-3. 在 Windows 上安装[Rufus](https://rufus.ie/zh_CN.html)，然后使用 Rufus 将镜像刻录至 U 盘
-4. 使用 Windows 自带的磁盘管理工具分出一块**未分配**的区域
-
 ## 安装前的准备
+
+假设你正在使用 Windows
+
+1. 从[华为云的 Arch Linux 镜像](https://mirrors.huaweicloud.com/archlinux/iso/latest/)下载 `archlinux-版本日期-x86_64.iso` 镜像文件到你的电脑上（其他的镜像站：[镜像站列表](https://www.archlinux.org/download/#download-mirrors)）
+2. 准备一个 1G 大小以上 U 盘（容量比 archlinux 的镜像文件大就行，如果没 U 盘，可以试试在手机上用 DriveDroid 模拟 U 盘）
+3. 在 Windows 上安装[Rufus](https://rufus.ie/zh_CN.html)，然后使用 Rufus 将第一步下载好的 archlinux 镜像刻录至 U 盘，分区类型选择 GPT，目标系统类型选择 UEFI，其他的设置默认即可
+4. 使用 Windows 自带的磁盘管理工具分出一块**未分配**的区域供我们要安装的 ArchLinux 使用
 
 ### 启动到 Live 环境
 
 1. U 盘插在电脑上，在键盘亮起/屏幕微亮/快要显示出品牌图标时，按 F12（有些电脑是 F10，建议自己查一下）进入启动顺序选择界面，然后选择你的 USB。
-2. 当 Arch 菜单出现时，选择 Arch Linux install medium 并按 Enter 进入安装环境。
-3. 不一会就会以 root 身份登录进一个显示`root@archiso ~ # `字样的虚拟控制台
+2. 当 Arch 菜单出现时，选择 _Arch Linux install medium_ 并按 Enter 进入安装环境。
+3. 等几分钟后就会以 root 身份登录进一个显示`root@archiso ~ # `字样的虚拟控制台
 
 ### 验证启动模式
 
@@ -199,7 +198,7 @@ pacman -Syy
 
 ```bash
 pacstrap /mnt linux linux-firmware
-pacstrap /mnt base base-devel dhcpcd neovim dialog wpa_supplicant  networkmanager netctl
+pacstrap /mnt base base-devel dhcpcd neovim dialog wpa_supplicant networkmanager netctl
 ```
 
 这些务必安装，否则之后可能会有连不上网络等等麻烦
@@ -244,9 +243,8 @@ ln -s /usr/bin/nvim /usr/bin/vi
 vim /etc/locale.gen
 # 生成 locale 信息
 locale-gen
-# 创建 locale.conf 文件，并编辑设定 LANG 变量
+# 创建 locale.conf 文件，并编辑设定 LANG 变量，不建议弄成中文的，会导致 tty 乱码
 echo 'LANG=en_US.UTF-8' > /etc/locale.conf
-# 并不建议弄成中文的，会导致 tty 乱码
 ```
 
 ### 网络配置
@@ -282,12 +280,15 @@ passwd
 
 ### 安装引导程序
 
+- [安装引导程序 - ArchWiki](<https://wiki.archlinux.org/index.php/Installation_guide_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%AE%89%E8%A3%85%E5%BC%95%E5%AF%BC%E7%A8%8B%E5%BA%8F>)
+- [GRUB (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/GRUB_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
 如果是 AMD CPU，需先 `pacman -S amd-ucode`；如果是 Intel CPU，则 `pacman -S intel-ucode`
 
 ```bash
 pacman -S ntfs-3g os-prober grub efibootmgr
 # 部署grub
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ArchLinux
 # 生成配置文件
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
@@ -307,7 +308,7 @@ umount /mnt
 reboot
 ```
 
-然后此时就可以拔掉 U 盘了，然后启动时按 F12（有些电脑是 F10）进入启动顺序选择界面，然后选择 arch。
+然后此时就可以拔掉 U 盘了，然后启动时按 F12（有些电脑是 F10）进入启动顺序选择界面，然后选择 ArchLinux（也可按 F2 进入 BIOS 设置界面，将 ArchLinux 调到第一位）
 
 输入用户名，回车，再输入密码，即可完成登录！
 
@@ -393,6 +394,8 @@ systemctl enable NetworkManager
 # 重启
 reboot
 ```
+
+重启后，登录进你新建的用户，然后打开 System Settings->Regional Settings->Language，将简体中文移至第一个，然后再 Log out（注销）重新登录，就会是中文图形界面了。
 
 ### 字体
 
@@ -483,15 +486,15 @@ Theme=Material-Color-Blue
 
 ```bash
 pacman -S v2ray qv2ray
+# 按需安装插件 qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan-dev-git ...
 ```
 
-1. 打开 qv2ray，启用 ssr 插件，点击插件，如果 ssr 未勾选则需要勾选再重启 qv2ray
-2. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；界面主题选择`Breeze`（即微风）；行为那里的复选框全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
-3. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作（如果系统时间不对，v2ray 无法正常工作）
-4. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
-5. 连接设置。勾选`绕过中国大陆`
-6. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
-7. 最后，点确定按钮以保存设置
+1. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；行为那里的复选框全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
+2. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作（如果系统时间不对，v2ray 无法正常工作）
+3. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
+4. 连接设置。勾选`绕过中国大陆`
+5. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
+6. 最后，点确定按钮以保存设置
 
 点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
 
@@ -697,7 +700,7 @@ sudo systemctl enable --now dogcom-d
 systemctl status dogcom-d
 ```
 
-## 一些问题
+## 遇到过的一些问题
 
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
 - VSCode 删除（移动进回收站） ext4 文件系统中的文件时，会卡顿。解决办法：`echo 'export ELECTRON_TRASH=gio' > ~/.config/plasma-workspace/env/electron-trash-gio.sh`，然后注销，重新登录。（我感觉并没有太大的改善，建议直接 shift+delete 彻底删除
@@ -706,6 +709,8 @@ systemctl status dogcom-d
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
   - 无法显示 CPU 和网络的图表，修复方法：`cp /usr/share/ksysguard/SystemLoad2.sgrd ~/.local/share/ksysguard/`
 - 刚安装的软件有时会出现没在应用程序菜单里显示的问题，解决办法：打开系统设置，切换一下图标，然后看看有没有显示出来，再切换回去，来回几次，就有了
+- 每次开机后打开 chrome 时都要求输入密码，解决方法：系统设置->KDE 钱包->调用钱包管理器->更改密码，不要输入，直接确认即可。
+- 有次将 EFI 分区格式化了，`initramfs-linux-fallback.img initramfs-linux.img vmlinuz-linux`，这三个文件消失了，这时需要`pacman -S linux`，再来安装 grub 和生成设置
 
 ### vscode 登录账号的问题
 
@@ -720,13 +725,8 @@ sudo pacman -S gnome-keyring
 
 ### r8152 网卡 Tx timeout 错误断网
 
-https://aur.archlinux.org/packages/r8152-dkms/
-
 ```bash
-# 先查看内核版本
-uname -a
-# 安装对应的 headers，我的内核版本为 5.8，故安装 linux58-headers
-pacman -S --needed linux58-headers
+pacman -S --needed linux-headers
 yay -S r8152-dkms
 ```
 
@@ -737,18 +737,22 @@ yay -S r8152-dkms
 - 按 F12 可以打开 Yakuake（一个快捷终端），不要点击关闭按钮，直接按 F12 或点击其他地方隐藏就行
 - Alt+Space 或者直接在桌面输入字符就可打开 KRunner（可以用来搜索应用程序、书签等）
 - 状态栏剪贴板右键->配置剪贴板->常规->勾选「忽略选区」。这样能避免鼠标选中文字时自动复制
-- 感觉自带的 `KDE 分区管理器` 比 `GParted` 更好用，打开 `KDE 分区管理器`，编辑每个分区的标签
-- 打开设置->屏幕保护。将屏幕和锁屏都关闭，否则休眠后可能需要登录两次
-- 打开 chrome 和 vscode 时，有时会弹出“您登录计算机时，您的登录密钥环未被解锁”
-  ```bash
-  sudo pacman -S seahorse
-  seahorse
-  ```
-  点击左上的加号新建一个 Password keyring，密码为空，然后将其设置为默认
-- chrome 设置字体，宽度固定的字体（即 monospace），改为 FiraCode Nerd Font Mono
+- 感觉自带的 `KDE 分区管理器` 比 `GParted` 更好用，打开 `KDE 分区管理器`，编辑每个分区的标签名（不建议写成中文）
 - [Linux 开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
-  注：这部分建议在 hyuuko 用户进行。先使用 `sudo fdisk -l` 查看存储空间，找到我们想要自动挂载的那个设备，比如我这里是 `/dev/sda2`，文件系统是 exfat，然后使用 `sudo blkid /dev/sda2` 查看设备的 UUID，我这里是 0E95-06C4，然后使用`id`命令查看 hyuuko 用户的 uid 和 gid，我们就可以 `sudo vim /etc/fstab`，在文件末尾添加：`UUID=0E95-06C4 /mnt/SHARE exfat uid=1000,gid=1001,umask=000 0 0`。接下来我们可以先 `sudo mkdir /mnt/SHARE` 再 `sudo mount -a` 来挂载 fstab 中的所有文件系统（先确保你想要挂载的设备还没有挂载上去），之后用 `df -h` 命令查看是否挂载成功。
-  - 注意：如果文件系统是 ext4，不支持 mount 时设置 uid 和 gid，所以需要将刚才的改成：`UUID=157ee4d6-833f-4f22-84c8-b297c07085af /mnt/Share ext4 defaults,noatime 0 0`，然后 `sudo mount -a` `sudo chown hyuuko:hyuuko /mnt/Share`
+  ```bash
+  su # 切换至 root 用户
+  pacman -S arch-install-scripts
+  # 查看磁盘信息，找到自己想要挂载的分区
+  fdisk -l
+  # 以 /dev/sda2 为例，先创建一个文件夹
+  mkdir /mnt/XXX
+  # 更改其所有者及用户组，此处的 hyuuko 请改为你自己的
+  chown hyuuko:hyuuko /mnt/XXX
+  # 进行挂载
+  mount /dev/sda2 /mnt/XXX
+  # 将配置追加至 /etc/fstab
+  genfstab / | grep '/dev/sda2' | >> /etc/fstab
+  ```
 
 ## 开发环境配置
 

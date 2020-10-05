@@ -20,6 +20,7 @@
   - [时区](#时区)
   - [本地化](#本地化)
   - [网络配置](#网络配置)
+  - [Initramfs](#initramfs)
   - [设置 Root 密码](#设置-root-密码)
   - [安装引导程序](#安装引导程序)
   - [重启进入安装好了的 Arch Linux](#重启进入安装好了的-arch-linux)
@@ -93,7 +94,7 @@ ls -d /sys/firmware/efi/efivars
 ### 连接到因特网
 
 - 如果是有线网络
-  - 直接 `ping www.baidu.com` 来判断网络是否连接正常，Ctrl+C 退出该命令。
+  - 直接 `ping baidu.com` 来判断网络是否连接正常，Ctrl+C 退出该命令。
 - 如果是无线网络
   - 执行以下命令（详见[iwctl - ArchWiki](<https://wiki.archlinux.org/index.php/Iwd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#iwctl>)）
     ```bash
@@ -134,9 +135,9 @@ fdisk -l
 cfdisk /dev/sda
 ```
 
-按上下键选择想要操作的分区，移动到绿色的空闲分区。然后按左右键选择所要进行的操作，选择 `[ New ]`，然后回车，输入想要分配的大小，然后再确认，再按左右键选择 `[ Type ]` 来设置该分区的类型。
+按上下键选择想要操作的分区，移动到绿色的空闲分区。然后按左右键选择所要进行的操作，选择 `[ New ]`，然后回车，输入想要分配的大小，然后再确认，再按左右键选择 `[ Type ]`，然后回车，来设置该分区的类型。
 
-我的分区（_swap 分区现在可以先不设置_）：
+以我的分区（_swap 分区现在可以先不设置_）为例：
 
 |  挂载点   | 假设的设备文件 |      分区类型       |        大小        |
 | :-------: | :------------: | :-----------------: | :----------------: |
@@ -144,7 +145,7 @@ cfdisk /dev/sda
 |   /mnt    |   /dev/sda2    | Linux root (x86-64) |        60G         |
 | /mnt/home |   /def/sda3    |     Linux home      | 60G （剩下所有的） |
 
-也有人将`/mnt/boot`换成`/mnt/efi`或`/mnt/boot/efi`，其实这个随意，不过最好还是`/mnt/boot`。分完后，按左右键选择`[ Write ]`使修改生效，再按 q 退出 cfdisk 界面。
+也有人将`/mnt/boot`换成`/mnt/efi`或`/mnt/boot/efi`，其实这个随意，不过最好还是`/mnt/boot`。分完后，按左右键选择`[ Write ]`回车，再 yes，使修改生效，再按 q 退出 cfdisk 界面。
 
 ### 格式化分区
 
@@ -179,12 +180,8 @@ mount /dev/sda3 /mnt/home
 ### 更换镜像源
 
 ```bash
-# echo 'Server = http://mirrors.cqu.edu.cn/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+# 修改软件源
 echo 'Server = https://mirrors.huaweicloud.com/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-echo 'Server = https://mirrors.cloud.tencent.com/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-# 添加写保护，防止被修改
-chattr +i /etc/pacman.d/mirrorlist
-# 如果之后想编辑，可以 chattr -i /etc/pacman.d/mirrorlist 去除写保护
 # 更新源列表
 pacman -Syy
 ```
@@ -196,8 +193,8 @@ pacman -Syy
 使用 pacstrap 脚本，安装 base 软件包和 Linux 内核以及常规硬件的固件等等：
 
 ```bash
-pacstrap /mnt linux linux-firmware
-pacstrap /mnt base base-devel dhcpcd neovim dialog wpa_supplicant networkmanager netctl
+pacstrap /mnt --needed linux linux-firmware
+pacstrap /mnt --needed base base-devel dhcpcd neovim dialog wpa_supplicant networkmanager netctl
 ```
 
 这些务必安装，否则之后可能会有连不上网络等等麻烦
@@ -238,7 +235,7 @@ hwclock --systohc
 ln -s /usr/bin/nvim /usr/bin/vim
 ln -s /usr/bin/nvim /usr/bin/vi
 
-# 编辑/etc/locale.gen，将 zh_CN.UTF-8 UTF-8 和 en_US.UTF-8 UTF-8 取消注释
+# 编辑/etc/locale.gen，将 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 取消注释
 vim /etc/locale.gen
 # 生成 locale 信息
 locale-gen
@@ -267,9 +264,29 @@ vim /etc/hosts
 ```bash
 # 设置 DNS
 echo 'nameserver 114.114.114.114' > /etc/resolv.conf
-# 添加写保护，防止被修改
-chattr +i /etc/resolv.conf
 ```
+
+### Initramfs
+
+- [mkinitcpio (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Mkinitcpio_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
+执行 `ls /boot` 命令
+
+- 如果显示以下几个文件
+  ```
+  initramfs-linux-fallback.img  initramfs-linux.img  vmlinuz-linux
+  ```
+  则说明 initramfs 已经被自动创建了
+- 如果没有 `initramfs-linux-fallback.img initramfs-linux.img` 这两个文件，那我们就需要手动创建 initramfs 了。`vim /etc/mkinitcpio.d/linux.preset`，填入如下内容：
+  ```conf
+  ALL_config="/etc/mkinitcpio.conf"
+  ALL_kver="/boot/vmlinuz-linux"
+  PRESETS=('default' 'fallback')
+  default_image="/boot/initramfs-linux.img"
+  fallback_image="/boot/initramfs-linux-fallback.img"
+  fallback_options="-S autodetect"
+  ```
+  然后运行 `mkinitcpio -p linux` 以生成镜像，如果 `ls /boot` 还是没有 `initramfs-linux-fallback.img initramfs-linux.img` 这两个文件，请仔细检查 `/etc/mkinitcpio.d/linux.preset` 是不是写错了，再重新 `mkinitcpio -p linux`
 
 ### 设置 Root 密码
 
@@ -285,7 +302,7 @@ passwd
 如果是 AMD CPU，需先 `pacman -S amd-ucode`；如果是 Intel CPU，则 `pacman -S intel-ucode`
 
 ```bash
-pacman -S ntfs-3g os-prober grub efibootmgr
+pacman -S --needed ntfs-3g os-prober grub efibootmgr
 # 部署grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ArchLinux
 # 生成配置文件
@@ -330,7 +347,12 @@ Server = https://mirrors.cloud.tencent.com/archlinuxcn/$arch
 ```
 
 ```bash
-chattr +i /etc/pacman.conf          # 添加写保护
+# 给一些文件添加写保护，防止文件被程序修改
+chattr +i /etc/pacman.d/mirrorlist
+chattr +i /etc/pacman.conf
+chattr +i /etc/resolv.conf
+# 如果之后想修改这些文件，可以 chattr -i ... 以去除写保护
+
 pacman -Syy archlinuxcn-keyring     # 安装 keyring
 pacman -Syu                         # 系统更新
 ```

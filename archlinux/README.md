@@ -95,10 +95,10 @@ ls -d /sys/firmware/efi/efivars
 - 如果是有线网络
   - 直接 `ping www.baidu.com` 来判断网络是否连接正常，Ctrl+C 退出该命令。
 - 如果是无线网络
-  - 执行以下命令（详见[iwtch - ArchWiki](<https://wiki.archlinux.org/index.php/Iwd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#iwctl>)）
+  - 执行以下命令（详见[iwctl - ArchWiki](<https://wiki.archlinux.org/index.php/Iwd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#iwctl>)）
     ```bash
     # 进入交互式提示符环境
-    iwtch
+    iwctl
     # 接下来是在以 [iwd] 开头的提示符环境中进行的
     # 列出所有 WiFi 设备
     device list
@@ -859,8 +859,8 @@ npm config set registry https://registry.npm.taobao.org/ && npm config get regis
 
 ```bash
 sudo pacman -S --needed vmware-workstation
-sudo pacman -S --needed linux56-headers
-sudo modprobe -a vmw_vmci vmmon                  # 加载内核模块
-sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
+sudo pacman -S --needed linux-headers          # 可选依赖项，模块编译所需
+sudo modprobe -a vmw_vmci vmmon                  # 加载 vmw_vmci 和 vmmon 内核模块
 sudo systemctl enable --now vmware-networks      # 启用虚拟机网络
+sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
 ```

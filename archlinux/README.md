@@ -77,7 +77,7 @@
 ### 启动到 Live 环境
 
 1. U 盘插在电脑上，在键盘亮起/屏幕微亮/快要显示出品牌图标时，（如果你之前没有关闭过 secure boot，请按 F2 进入 BIOS 设置界面，将 secure boot 禁用再来进行这一步）按 F12（有些电脑是 F10，建议自己查一下）进入启动顺序选择界面，然后选择你的 USB。
-2. 当 Arch 菜单出现时，选择 _Arch Linux install medium_ 并按 Enter 进入安装环境。
+2. 当 Arch 菜单出现时，选择 _Arch Linux install medium (x86_64, UEFI)_ 并按 Enter 进入安装环境。
 3. 等几分钟后就会以 root 身份登录进一个显示`root@archiso ~ # `字样的虚拟控制台
 
 ### 验证启动模式
@@ -138,11 +138,11 @@ cfdisk /dev/sda
 
 我的分区（_swap 分区现在可以先不设置_）：
 
-|  挂载点   | 假设的设备文件 |       分区类型       |        大小        |
-| :-------: | :------------: | :------------------: | :----------------: |
-| /mnt/boot |   /dev/sda1    | EFI system partition |   500M（足够了）   |
-|   /mnt    |   /dev/sda2    | Linux root (x86-64)  |        60G         |
-| /mnt/home |   /def/sda3    |      Linux home      | 60G （剩下所有的） |
+|  挂载点   | 假设的设备文件 |      分区类型       |        大小        |
+| :-------: | :------------: | :-----------------: | :----------------: |
+| /mnt/boot |   /dev/sda1    |     EFI System      |   500M（足够了）   |
+|   /mnt    |   /dev/sda2    | Linux root (x86-64) |        60G         |
+| /mnt/home |   /def/sda3    |     Linux home      | 60G （剩下所有的） |
 
 也有人将`/mnt/boot`换成`/mnt/efi`或`/mnt/boot/efi`，其实这个随意，不过最好还是`/mnt/boot`。分完后，按左右键选择`[ Write ]`使修改生效，再按 q 退出 cfdisk 界面。
 
@@ -151,12 +151,12 @@ cfdisk /dev/sda
 这里的 `/dev/sda1` 等等请换成你自己的
 
 ```bash
-# 将 EFI 系统分区格式化为 fat32
+# 将 EFI System 分区格式化为 fat32
 mkfs.vfat /dev/sda1
 # 将 Linux root 分区格式化为 ext4
 mkfs.ext4 /dev/sda2
 # 将 Linux home 分区格式化为 ext4
-mkfs.ext4 /dev/sda1
+mkfs.ext4 /dev/sda3
 ```
 
 ### 挂载分区
@@ -164,13 +164,12 @@ mkfs.ext4 /dev/sda1
 这里的 `/dev/sda1` 等等请换成你自己的
 
 ```bash
-# 先挂载 linux 根分区
-mkdir /mnt
+# 先挂载 Linux root 分区
 mount /dev/sda2 /mnt
-# 挂载 EFI 系统分区
+# 挂载 EFI System 分区
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
-# 挂载 linux home 分区
+# 挂载 Linux home 分区
 mkdir /mnt/home
 mount /dev/sda3 /mnt/home
 ```

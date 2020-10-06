@@ -12,33 +12,26 @@
   - [输入法和皮肤](#输入法和皮肤)
   - [代理软件](#代理软件)
   - [透明代理](#透明代理)
-  - [google-chrome](#google-chrome)
   - [git](#git)
   - [zsh](#zsh)
-  - [Rust](#rust)
-    - [安装及配置 Rust](#安装及配置-rust)
-    - [VSCode Rust 插件](#vscode-rust-插件)
-  - [C/C++](#cc)
-  - [Node.js](#nodejs)
-  - [NeoVim](#neovim)
-  - [VMware](#vmware)
   - [鼠标宏](#鼠标宏)
-  - [其他软件](#其他软件)
-    - [国产软件](#国产软件)
   - [other](#other)
     - [vscode 登录账号的问题](#vscode-登录账号的问题)
     - [r8152 网卡 Tx timeout 错误导致断网](#r8152-网卡-tx-timeout-错误导致断网)
     - [校园网](#校园网)
   - [aria2](#aria2)
   - [美化](#美化)
-    - [主题](#主题)
-      - [系统设置](#系统设置)
-      - [面板](#面板)
-      - [其他](#其他)
-  - [pacman 常见用法](#pacman-常见用法)
+    - [系统设置](#系统设置)
+    - [面板](#面板)
   - [Tips](#tips)
   - [修复 grub](#修复-grub)
     - [grub 没有完全坏掉可以进入 grub rescue 救援模式](#grub-没有完全坏掉可以进入-grub-rescue-救援模式)
+  - [开发环境配置](#开发环境配置)
+    - [Rust](#rust)
+    - [C/C++](#cc)
+    - [Node.js](#nodejs)
+    - [NeoVim](#neovim)
+    - [VMware](#vmware)
     - [.NET](#net)
 
 # Manjaro-kde
@@ -365,10 +358,6 @@ $ curl -vI https://www.google.com
 2020/10/06 16:56:31 192.168.114.514:45470 accepted tcp:31.13.68.1:443 [outBound_PROXY]
 ```
 
-## google-chrome
-
-若 chrome 可以打开系统代理设置（我的 manjaro xfce 就不行），可以略过此步。否则需要`google-chrome-stable --proxy-server="socks5://127.0.0.1:7890"`打开 chrome，登录帐号同步数据。之后弄好油猴脚本，并安装 Proxy SwitchyOmega 插件，用它来开启系统代理
-
 ## git
 
 注：邮箱和用户名请换成你自己的
@@ -407,114 +396,6 @@ nvim /etc/passwd
 
 之后注销，再重新登录即可。
 
-## Rust
-
-### 安装及配置 Rust
-
-注：有很多已经在`.zshrc`里设置了，比如环境变量等等，此处就不再重复了。
-
-```bash
-# 请在 hyuuko 用户里安装
-su hyuuko
-# 直接默认安装 stable
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-# 重启 zsh（这会执行.zshrc中的source $HOME/.cargo/env）
-exec zsh
-# 安装 nightly
-rustup toolchain install nightly
-
-mkdir ~/.zfunc
-# 启用 rustup 补全
-rustup completions zsh > ~/.zfunc/_rustup
-# 启用 cargo 补全
-rustup completions zsh cargo > ~/.zfunc/_cargo
-exec zsh
-```
-
-接下来`vim ~/.cargo/config`填入以下内容以设置 rust crates 源
-
-```conf
-[source.crates-io]
-registry = "https://github.com/rust-lang/crates.io-index"
-
-# 替换成你偏好的镜像源
-replace-with = 'sjtu'
-
-# 清华大学
-[source.tuna]
-registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
-
-# 中国科学技术大学
-[source.ustc]
-registry = "git://mirrors.ustc.edu.cn/crates.io-index"
-
-# 上海交通大学
-[source.sjtu]
-registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
-
-# rustcc社区
-[source.rustcc]
-registry = "git://crates.rustcc.cn/crates.io-index"
-```
-
-### VSCode Rust 插件
-
-- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer)
-- [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
-
-## C/C++
-
-```bash
-pacman -S --needed gcc clang lib32-gcc-libs gdb make binutils man-pages ccls bear
-# 安装 qemu，有点大，有需要就装吧
-pacman -S --needed qemu-arch-extra
-```
-
-## Node.js
-
-```bash
-pacman -S --needed nodejs-lts-erbium yarn npm
-yarn config set registry https://registry.npm.taobao.org/ && yarn config get registry
-npm config set registry https://registry.npm.taobao.org/ && npm config get registry
-```
-
-## NeoVim
-
-https://github.com/Gabirel/Hack-SpaceVim/blob/master/README_zh_CN.adoc
-
-先确保安装好了 npm 和 yarn，并且换源了
-
-```bash
-pc zsh
-# 安装 SpaceVim
-curl -sLf https://spacevim.org/cn/install.sh | bash
-# 打开 nvim，选择 dark powered mode
-nvim
-# 退出，再打开 nvim 就会自动安装插件
-nvim
-```
-
-然后编辑`~/.SpaceVim.d/init.toml`
-并且
-
-```bash
-mkdir ~/.SpaceVim.d/autoload
-touch ~/.SpaceVim.d/autoload/myspacevim.vim
-```
-
-## VMware
-
-```bash
-pacman -S --needed vmware-workstation
-uname -r                              # 查看一下自己的内核
-pacman -S --needed linux56-headers    # 如果是 5.6 就这样
-modprobe -a vmw_vmci vmmon            # 加载内核模块
-systemctl enable vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
-systemctl start vmware-usbarbitrator
-systemctl enable vmware-networks      # 启用虚拟机网络
-systemctl start vmware-networks
-```
-
 ## 鼠标宏
 
 ```bash
@@ -550,18 +431,6 @@ sudo pacman -S piper
 
 ```json
 "editor.selectionClipboard": false
-```
-
-## 其他软件
-
-### 国产软件
-
-```bash
-# 网抑云
-sudo pacman -S netease-cloud-music
-# WPS
-sudo pacman -S --needed wps-office-cn ttf-wps-fonts wps-office-mime-cn wps-office-mui-zh-cn
-yay -S ttf-ms-fonts wps-office-fonts
 ```
 
 ## other
@@ -696,29 +565,18 @@ sudo systemctl start aria2c
 
 ## 美化
 
-不要调缩放率，否则 kconsole 会有透明线，调节字体 DPI 为 120 就够了
+```bash
+# 用于安装主题、图标等
+yay -S ocs-url
+```
 
-### 主题
+- 进入 [Breezemite 主题](https://store.kde.org/p/1169286/)页面，点击`Files(1)`，再点`Install`按钮进行安装
+- 进入 [Uos [Deepin V20] 图标](https://store.kde.org/p/1349376/)页面，点击`Files(1)`，再点`Install`按钮进行安装
 
-三种方法安装主题
+### 系统设置
 
-- 第一种：在系统设置->外观里安装（需要选一个好一点的代理）
-- 第二种
-  ```bash
-  yay -S ocs-url
-  ```
-  然后比如在 https://store.kde.org/p/1310500 点安装按钮
-- 第三种：手动下载，解压
-  <br>/usr/share/plasma/desktoptheme 这是存放 plasma 主题
-  <br>/usr/share/plasma/look-and-feel/ 存放全局主题
-  <br>/usr/share/plasma/plasmoids/ 存放插件
-  <br>~/.local/share/plasma/是用户的
-  <br>把解压出的 com.github.vinceliuice.McMojave 复制进/usr/share/plasma/look-and-feel/
-
-#### 系统设置
-
-- 全局主题。选择 `McMojave-light`，不要勾选`使用来自主题的桌面布局`
-- Plasma 样式。选择`Breath2 Light`
+- 全局主题。选择默认的`微风`即可，不要勾选`使用来自主题的桌面布局`
+- Plasma 样式。选择`微风`
 - 应用程序风格
   - 应用样式。选择`微风`
   - 窗口装饰
@@ -730,18 +588,19 @@ sudo systemctl start aria2c
       PaddingTop=30
       ```
     - 标题栏按钮。左边是 菜单 保持在上方，右边是 上下文帮助 最小化 最大化 关闭
-- 颜色。选择`McMojaveLight`
-- 图标。选择`McMojave-circle`
+- 颜色。选择`亮色微风`
+- 图标。选择`Uos`
+- 字体。DPI 120
 - 工作区间行为
   - 常规行为->动画速度。调到第 13 格
-  - 锁屏->外观。锁屏壁纸选择`matrix-manjaro`
+  - 锁屏->外观。选择锁屏壁纸
 - 输入设备->鼠标。指针速度 8 格
 - 显示和监控->混成器->渲染后端。选择`OpenGL 3.1`
 - 在桌面上右键，配置桌面
-  - 壁纸。选择`mountains-1412683`
+  - 壁纸。
   - 鼠标动作。中键改为`切换窗口`
 
-#### 面板
+### 面板
 
 - 面板在下方，部件从左到右依次是：应用程序面板 图标任务管理器 显示桌面 系统托盘 数字时钟 系统负荷查看器
 - 点击左下角的应用程序面板，右键程序图标可以`固定到任务管理器`
@@ -755,12 +614,6 @@ sudo systemctl start aria2c
   - 勾选`显示日期` `显示秒`
   - `时间显示`设置为 24 小时制
   - `日期格式`为自定义：M/d
-
-#### 其他
-
-- 按 F12 打开 Yakuake，然后右键编辑当前方案->外观，新建一个配色方案，背景透明度 20%
-
-## pacman 常见用法
 
 ## Tips
 
@@ -812,6 +665,110 @@ grub rescue> normal
 df
 # 如果在 /dev/sda2
 sudo grub-install /dev/sda2
+```
+
+## 开发环境配置
+
+### Rust
+
+注：有很多已经在`.zshrc`里设置了，比如环境变量等等，此处就不再重复了。
+
+```bash
+# 请在 hyuuko 用户里安装
+su hyuuko
+# 直接默认安装 stable
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+# 重启 zsh（这会执行.zshrc中的source $HOME/.cargo/env）
+exec zsh
+# 安装 nightly
+rustup toolchain install nightly
+
+mkdir ~/.zfunc
+# 启用 rustup 补全
+rustup completions zsh > ~/.zfunc/_rustup
+# 启用 cargo 补全
+rustup completions zsh cargo > ~/.zfunc/_cargo
+exec zsh
+```
+
+接下来`vim ~/.cargo/config`填入以下内容以设置 rust crates 源
+
+```conf
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+
+# 替换成你偏好的镜像源
+replace-with = 'sjtu'
+
+# 清华大学
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+
+# 中国科学技术大学
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+
+# 上海交通大学
+[source.sjtu]
+registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
+
+# rustcc社区
+[source.rustcc]
+registry = "git://crates.rustcc.cn/crates.io-index"
+```
+
+- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer)
+- [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
+
+### C/C++
+
+```bash
+pacman -S --needed gcc clang lib32-gcc-libs gdb make binutils man-pages ccls bear
+# 安装 qemu，有点大，有需要就装吧
+pacman -S --needed qemu-arch-extra
+```
+
+### Node.js
+
+```bash
+pacman -S --needed nodejs-lts-erbium yarn npm
+yarn config set registry https://registry.npm.taobao.org/ && yarn config get registry
+npm config set registry https://registry.npm.taobao.org/ && npm config get registry
+```
+
+### NeoVim
+
+https://github.com/Gabirel/Hack-SpaceVim/blob/master/README_zh_CN.adoc
+
+先确保安装好了 npm 和 yarn，并且换源了
+
+```bash
+pc zsh
+# 安装 SpaceVim
+curl -sLf https://spacevim.org/cn/install.sh | bash
+# 打开 nvim，选择 dark powered mode
+nvim
+# 退出，再打开 nvim 就会自动安装插件
+nvim
+```
+
+然后编辑`~/.SpaceVim.d/init.toml`
+并且
+
+```bash
+mkdir ~/.SpaceVim.d/autoload
+touch ~/.SpaceVim.d/autoload/myspacevim.vim
+```
+
+### VMware
+
+```bash
+pacman -S --needed vmware-workstation
+uname -r                              # 查看一下自己的内核
+pacman -S --needed linux56-headers    # 如果是 5.6 就这样
+sudo modprobe -a vmw_vmci vmmon                  # 加载 vmw_vmci 和 vmmon 内核模块
+sudo systemctl enable --now vmware-networks      # 启用虚拟机网络
+sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
 ```
 
 ### .NET

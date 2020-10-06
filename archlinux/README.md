@@ -704,6 +704,7 @@ yay -S ocs-url
     - 标题栏按钮。左边是 菜单 保持在上方，右边是 上下文帮助 最小化 最大化 关闭
 - 颜色。选择`亮色微风`
 - 图标。选择`Uos`
+- 字体。DPI 120
 - 工作区间行为
   - 常规行为->动画速度。调到第 13 格
   - 锁屏->外观。选择锁屏壁纸
@@ -966,7 +967,7 @@ npm config set registry https://registry.npm.taobao.org/ && npm config get regis
 
 ```bash
 sudo pacman -S --needed vmware-workstation
-sudo pacman -S --needed linux-headers          # 可选依赖项，模块编译所需
+sudo pacman -S --needed linux-headers            # 可选依赖项，模块编译所需
 sudo modprobe -a vmw_vmci vmmon                  # 加载 vmw_vmci 和 vmmon 内核模块
 sudo systemctl enable --now vmware-networks      # 启用虚拟机网络
 sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接

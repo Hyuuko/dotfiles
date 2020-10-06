@@ -89,7 +89,7 @@
 ls -d /sys/firmware/efi/efivars
 ```
 
-如果显示 `/sys/firmware/efi/efivars`，则说明系统以 UEFI 模式启动。如果提示 `ls: cannot access '/sys/firmware/efi/efivars': No such file or directory`，则说明系统可能以 BIOS 或 CSM 模式启动。
+如果显示 `/sys/firmware/efi/efivars`，则说明系统以 UEFI 模式启动。如果提示 `ls: cannot access '/sys/firmware/efi/efivars': No such file or directory`，则说明系统可能以 BIOS 或 CSM 模式启动，自己百度怎么改为 UEFI 吧
 
 ### 连接到因特网
 
@@ -573,16 +573,71 @@ pacman -S v2ray qv2ray
 ### 透明代理
 
 - [透明代理 - 百度百科](https://baike.baidu.com/item/%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86)
+- [springzfx/cgproxy - GitHub](https://github.com/springzfx/cgproxy)
 
-不知道咋弄，逃。。
+- qv2ray 的设置，首选项
+  - 入站设置
+    - 可以不用勾选`设置系统代理`了
+    - 勾选`透明代理设置`；IPv6 监听地址填 `::1`；网络选项勾选 `TCP` 和 `UDP`；其他默认即可。
+  - 连接设置。勾选`绕过中国大陆`即可
 
 ```bash
 sudo pacman -S cgproxy-git
+# 启用 cgproxy 服务
 sudo systemctl enable --now cgproxy.service
-sudo vim /etc/cgproxy/config.json
-# 改成 "enable_gateway": true,
-# 再重启服务
+# v2ray TPROXY 需要一些特殊权限
+sudo setcap "cap_net_admin,cap_net_bind_service=ep" /usr/bin/v2ray
+```
+
+`sudo vim /etc/cgproxy/config.json`，编辑配置文件：
+
+```json
+{
+  "comment": "For usage, see https://github.com/springzfx/cgproxy",
+
+  "port": 12345,
+  "program_noproxy": ["v2ray", "qv2ray"],
+  "program_proxy": [],
+  "cgroup_noproxy": ["/system.slice/v2ray.service"],
+  "cgroup_proxy": ["/"],
+  "enable_gateway": false,
+  "enable_dns": true,
+  "enable_udp": true,
+  "enable_tcp": true,
+  "enable_ipv4": true,
+  "enable_ipv6": true,
+  "table": 10007,
+  "fwmark": 39283
+}
+```
+
+编辑配置文件后需要重启服务：
+
+```bash
 sudo systemctl restart cgproxy.service
+```
+
+测试（注：没有设置 http_proxy 等环境变量）：
+
+```bash
+$ curl -vI https://www.google.com
+*   Trying 31.13.68.1:443...
+* Connected to www.google.com (31.13.68.1) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+...
+```
+
+而且 qv2ray 里的 vCore 日志中会有：
+
+```
+2020/10/06 16:56:31 192.168.114.514:58429 accepted udp:114.114.114.114:53 [outBound_DIRECT]
+2020/10/06 16:56:31 192.168.114.514:45470 accepted tcp:31.13.68.1:443 [outBound_PROXY]
 ```
 
 ### zsh
@@ -697,7 +752,7 @@ Shift_L,   Down, Shift_L|Button5
 
 ### 校园网
 
-- [Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [Drcom (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
 学校提供的 linux 版客户端经常掉线，故选择使用 dogcom。
 

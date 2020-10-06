@@ -28,7 +28,7 @@
   - [联网并添加 archlinuxcn 源](#联网并添加-archlinuxcn-源)
   - [创建交换文件](#创建交换文件)
   - [新建用户](#新建用户)
-  - [显卡和图形界面](#显卡和图形界面)
+  - [显卡驱动和图形界面](#显卡驱动和图形界面)
   - [字体](#字体)
   - [输入法和皮肤](#输入法和皮肤)
   - [代理软件](#代理软件)
@@ -58,8 +58,8 @@
 ### ArchWiki
 
 - [Installation guide (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Installation_guide_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
-- [List of applications (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/List_of_applications_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 - [General recommendations (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/General_recommendations_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [List of applications (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/List_of_applications_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
 ### 博客、知乎等
 
@@ -261,11 +261,6 @@ vim /etc/hosts
 127.0.1.1  myhostname.localdomain  myhostname
 ```
 
-```bash
-# 设置 DNS
-echo 'nameserver 114.114.114.114' > /etc/resolv.conf
-```
-
 ### Initramfs
 
 - [mkinitcpio (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Mkinitcpio_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
@@ -299,7 +294,12 @@ passwd
 - [安装引导程序 - ArchWiki](<https://wiki.archlinux.org/index.php/Installation_guide_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%AE%89%E8%A3%85%E5%BC%95%E5%AF%BC%E7%A8%8B%E5%BA%8F>)
 - [GRUB (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/GRUB_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
-如果是 AMD CPU，需先 `pacman -S amd-ucode`；如果是 Intel CPU，则 `pacman -S intel-ucode`
+处理器可能有[错误行为](https://www.anandtech.com/show/8376/intel-disables-tsx-instructions-erratum-found-in-haswell-haswelleep-broadwelly), 而内核可以通过更新启动时的 _Microcode_，即微码，来修正这些错误行为。参考[微码](<https://wiki.archlinux.org/index.php/Microcode_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)获取更多细节。启用微码：
+
+- 如果是 AMD CPU，需先 `pacman -S amd-ucode`
+- 如果是 Intel CPU，则 `pacman -S intel-ucode`
+
+接下来安装引导程序
 
 ```bash
 pacman -S --needed ntfs-3g os-prober grub efibootmgr
@@ -314,19 +314,15 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ### 重启进入安装好了的 Arch Linux
 
 ```bash
-# 退出系统，回到 Live 环境
+# 退出我们安装好了的系统，回到 U 盘里的 Live 环境
 exit
-# umount 挂载的设备
-umount /mnt/boot
-umount /mnt/home
-umount /mnt
 # 重启
 reboot
 ```
 
 然后此时就可以拔掉 U 盘了，然后启动时按 F12（有些电脑是 F10）进入启动顺序选择界面，然后选择 ArchLinux（也可按 F2 进入 BIOS 设置界面，将 ArchLinux 调到第一位）
 
-输入用户名，回车，再输入密码，即可完成登录！
+输入用户名 root，回车，再输入密码，即可完成登录！
 
 ## 安装后的工作
 
@@ -350,8 +346,12 @@ Server = https://mirrors.cloud.tencent.com/archlinuxcn/$arch
 # 给一些文件添加写保护，防止文件被程序修改
 chattr +i /etc/pacman.d/mirrorlist
 chattr +i /etc/pacman.conf
+# 设置 DNS
+echo 'nameserver 114.114.114.114' > /etc/resolv.conf
 chattr +i /etc/resolv.conf
 # 如果之后想修改这些文件，可以 chattr -i ... 以去除写保护
+# 重启网络服务
+systemctl restart systemd-networkd
 
 pacman -Syy archlinuxcn-keyring     # 安装 keyring
 pacman -Syu                         # 系统更新
@@ -394,18 +394,32 @@ passwd username
 # %wheel ALL=(ALL) NOPASSWD: ALL
 ```
 
-### 显卡和图形界面
+### 显卡驱动和图形界面
+
+- [Xorg (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Xorg_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [NVIDIA (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/NVIDIA_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%AE%89%E8%A3%85>)
+- [Display manager (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Display_manager_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%9B%BE%E5%BD%A2%E7%95%8C%E9%9D%A2>)
+
+先来安装显卡驱动
+
+- 如果有 NVIDIA 显卡，则：
+  ```bash
+  pacman -S nvidia
+  ```
+  注：这个软件包里的 `/usr/lib/modprobe.d/nvidia.conf` 禁用了 nouveau
+- 如果没有 NVIDIA 显卡，只有 Intel 核显，则：
+  ```bash
+  pacman -S xf86-video-intel
+  ```
+
+接下来安装图形界面
 
 ```bash
-# 禁用 nouveau
-echo 'blacklist nouveau' > /lib/modprobe.d/dist-blacklist.conf
-# 安装 nvidia 显卡
-pacman -S nvidia nvidia-utils nvidia-settings
 # 安装 xorg 组件
 pacman -S xorg
 # 安装 KDE plasma
 pacman -S plasma kde-applications
-# 安装桌面管理器
+# 安装显示管理器
 pacman -S sddm
 # 设置自启
 systemctl enable sddm

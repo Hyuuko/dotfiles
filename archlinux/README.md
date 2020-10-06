@@ -73,7 +73,7 @@
 2. 准备一个 1G 大小以上 U 盘（容量比 archlinux 的镜像文件大就行，如果没 U 盘，可以试试在手机上用 DriveDroid 模拟 U 盘）
 3. 在 Windows 上安装[Rufus](https://rufus.ie/zh_CN.html)，然后使用 Rufus 将第一步下载好的 archlinux 镜像刻录至 U 盘，分区类型选择 GPT，目标系统类型选择 UEFI，其他的设置默认即可
 4. 使用 Windows 自带的磁盘管理工具分出一块**未分配**的区域供我们要安装的 ArchLinux 使用
-5. **禁用 Windows 的快速启动**
+5. **禁用 Windows 的快速启动**：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
 
 ### 启动到 Live 环境
 
@@ -579,7 +579,6 @@ pacman -S v2ray qv2ray
   - 入站设置
     - 可以不用勾选`设置系统代理`了
     - 勾选`透明代理设置`；IPv6 监听地址填 `::1`；网络选项勾选 `TCP` 和 `UDP`；其他默认即可。
-  - 连接设置。勾选`绕过中国大陆`即可
 
 ```bash
 sudo pacman -S cgproxy-git
@@ -645,6 +644,7 @@ $ curl -vI https://www.google.com
 注：请把以下的 hyuuko 换成你自己的用户名
 
 ```bash
+su
 pacman -S --needed zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k
 
 # 从 gitee 克隆配置文件（用 git 协议进行 git push 时不需要输入用户名和密码）
@@ -659,7 +659,7 @@ ln -s $(pwd)/archlinux/.zshrc /root/.zshrc
 vim /etc/passwd
 ```
 
-之后注销，再重新登陆即可。
+之后注销，再重新登录即可。
 
 ### git
 
@@ -670,6 +670,7 @@ git config --global user.email "751533978@qq.com"
 git config --global user.name "hyuuko"
 git config --global core.editor nvim
 
+# 建议在你新建的用户下进行
 # 如果把先前的机器上的私钥公钥备份，则再生成一份
 ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
 cat ~/.ssh/id_rsa.pub

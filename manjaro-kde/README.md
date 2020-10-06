@@ -1,33 +1,96 @@
-# dotfiles
+目录
 
-日常开发环境：Manjaro + KDE
+- [Manjaro-kde](#manjaro-kde)
+  - [安装前的准备](#安装前的准备)
+  - [安装](#安装)
+  - [创建交换文件](#创建交换文件)
+  - [设置时区，同步时间](#设置时区同步时间)
+  - [换源](#换源)
+  - [安装软件](#安装软件)
+  - [设置 DNS](#设置-dns)
+  - [调整鼠标滚轮速度](#调整鼠标滚轮速度)
+  - [输入法和皮肤](#输入法和皮肤)
+  - [代理软件](#代理软件)
+  - [透明代理](#透明代理)
+  - [google-chrome](#google-chrome)
+  - [git](#git)
+  - [zsh](#zsh)
+  - [Rust](#rust)
+    - [安装及配置 Rust](#安装及配置-rust)
+    - [VSCode Rust 插件](#vscode-rust-插件)
+  - [C/C++](#cc)
+  - [Node.js](#nodejs)
+  - [NeoVim](#neovim)
+  - [VMware](#vmware)
+  - [鼠标宏](#鼠标宏)
+  - [其他软件](#其他软件)
+    - [国产软件](#国产软件)
+  - [other](#other)
+    - [vscode 登录账号的问题](#vscode-登录账号的问题)
+    - [r8152 网卡 Tx timeout 错误导致断网](#r8152-网卡-tx-timeout-错误导致断网)
+    - [校园网](#校园网)
+  - [aria2](#aria2)
+  - [美化](#美化)
+    - [主题](#主题)
+      - [系统设置](#系统设置)
+      - [面板](#面板)
+      - [其他](#其他)
+  - [pacman 常见用法](#pacman-常见用法)
+  - [Tips](#tips)
+  - [修复 grub](#修复-grub)
+    - [grub 没有完全坏掉可以进入 grub rescue 救援模式](#grub-没有完全坏掉可以进入-grub-rescue-救援模式)
+    - [.NET](#net)
 
-- [ArchLinux 或 Manjaro WSL2 配置记录](https://www.cnblogs.com/zsmumu/p/manjaro-wsl2.html)
-- [VSCode + clang + ccls 搭建 C/C++ 开发环境](https://www.cnblogs.com/zsmumu/p/12829634.html)
+# Manjaro-kde
 
-# Manjaro + KDE 配置
+## 安装前的准备
 
-## 安装系统
+假设你正在使用 Windows
 
-下载[Manjaro KDE](https://manjaro.org/download/) 或者直接去[华为云的 Manjaro 镜像](https://repo.huaweicloud.com/manjaro-cd/)，[查看预装软件列表](https://mirrors.huaweicloud.com/manjaro-cd/kde/20.0.3/manjaro-kde-20.0.3-200606-linux56-pkgs.txt)
+1. 在[华为云的 Manjaro 镜像](https://repo.huaweicloud.com/manjaro-cd/kde/)下载最新的镜像文件 `manjaro-kde-版本号-日期-linux内核版本.iso`，文件 `manjaro-kde-版本号-日期-linux内核版本-pkgs.txt` 是预装软件列表
+2. 准备一个 U 盘（容量比 manjaro-kde 镜像文件大就行，如果没 U 盘，可以试试在手机上用 DriveDroid 模拟 U 盘）
+3. 在 Windows 上安装[Rufus](https://rufus.ie/zh_CN.html)，然后使用 Rufus 将第一步下载好的 manjaro-kde 镜像刻录至 U 盘，分区类型选择 GPT（如果无法选择就算了），目标系统类型选择 UEFI，其他的设置默认即可。[如何使用 rufus 制作系统启动盘 - 百度经验](https://jingyan.baidu.com/article/0a52e3f48ad2b8bf62ed7236.html)
+4. 使用 Windows 自带的磁盘管理工具分出一块**未分配**的区域供我们要安装的 Manjaro 使用（尽量大些 100G 以上）
+5. **禁用 Windows 的快速启动**：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
 
-1. 先用 [rufus](https://rufus.ie/) 制作 Manjaro 的 USB 启动盘。制作完成后重启电脑，在显示笔记本厂商图标前按 F12 选择启动 USB 安装盘
+## 安装
+
+1. U 盘插在电脑上，在键盘亮起/屏幕微亮/快要显示出品牌图标时，（如果你之前没有关闭过 secure boot，请按 F2 进入 BIOS 设置界面，将 secure boot 禁用再来进行这一步）按 F12（有些电脑是 F10，建议自己查一下）进入启动顺序选择界面，然后选择你的 U 盘设备，回车。
 2. 然后开始选择时区、语言等，如果有 Invidia 显卡，那么 driver 请选择 no free
-3. 然后开始 boot，进入 Live CD 安装环境，在右下角断开网络连接，然后设置时区语言等等..
-4. 手动分区
+3. 然后开始 boot，进入 Live 安装环境，此处建议在右下角断开网络连接，然后设置时区语言等等..
+4. 手动分区，以下是我的分区（_swap 分区现在可以先不设置_）：
 
-|  大小/M  | 文件系统  |  挂载点   | 标记 |     用途     |
-| :------: | :-------: | :-------: | :--: | :----------: |
-|   8192   | linuxswap |    无     | swap |   交换分区   |
-|   512    |   fat32   | /boot/efi | boot | 操作系统引导 |
-|  40960   |   ext4    |     /     | root |    根目录    |
-| 其余所有 |   ext4    |   /home   |  无  |   用户数据   |
+   |  大小/M  | 文件系统 |  挂载点   | 标记 |      用途      |
+   | :------: | :------: | :-------: | :--: | :------------: |
+   |   512    |  fat32   | /boot/efi | boot |  EFI 系统引导  |
+   |  61440   |   ext4   |     /     | root |  Linux 根目录  |
+   | 剩下所有 |   ext4   |   /home   |  无  | Linux 用户目录 |
 
-安装好后，开始配置，为了避免麻烦，建议直接`su`进入 root 用户
+5. 设置用户名、主机名后，勾选不询问密码自动登录和为管理员帐号使用相同的密码
+6. 安装完成后，重启，打开 Yakuake 终端开始下面的配置，为了避免麻烦，建议直接`su`进入 root 用户，并且用 Firefox 浏览器打开此教程。
+
+## 创建交换文件
+
+- [交换文件 - ArchWiki](<https://wiki.archlinux.org/index.php/Swap_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BA%A4%E6%8D%A2%E6%96%87%E4%BB%B6>)
+
+```bash
+# 创建一个 8G 大小的文件，大约需要 1 分钟。注意最好别用 fallocate 命令
+dd if=/dev/zero of=/swapfile bs=1G count=8
+# 为交换文件设置权限
+chmod 600 /swapfile
+# 将其格式化
+mkswap /swapfile
+# 启用交换文件
+swapon /swapfile
+# 编辑 /etc/fstab，注意是 >> 不是 >
+echo '/swapfile none swap defaults 0 0' >> /etc/fstab
+# 检查交换空间的状态
+free -m
+```
 
 ## 设置时区，同步时间
 
-参考：[同步 Linux 双系统的时间](https://mogeko.me/2019/062/)
+- [同步 Linux 双系统的时间](https://mogeko.me/2019/062/)
 
 `nano /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
 
@@ -61,6 +124,7 @@ chattr +i /etc/pacman.d/mirrorlist
 [archlinuxcn]
 # 建议用自己学校的
 # Server = https://mirrors.cqu.edu.cn/archlinuxcn/$arch
+Server = https://mirrors.aliyun.com/archlinuxcn/$arch
 Server = https://mirrors.cloud.tencent.com/archlinuxcn/$arch
 ```
 
@@ -71,22 +135,65 @@ pacman -Syu                         # 系统更新
 
 ## 安装软件
 
-- ArchWiki 的推荐：[General recommendations (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/General_recommendations_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
-- 关于字体：[Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [修正简体中文显示为异体（日文）字形 - ArchWiki](<https://wiki.archlinux.org/index.php/Localization_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)/Simplified_Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BF%AE%E6%AD%A3%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E4%B8%BA%E5%BC%82%E4%BD%93%EF%BC%88%E6%97%A5%E6%96%87%EF%BC%89%E5%AD%97%E5%BD%A2>)
 
 ```bash
-# 为了方便就全写一起了
-su
-pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code adobe-source-han-sans-cn-fonts \
-fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl} \
-v2ray qv2ray qv2ray-plugin-{ssr-dev-git,trojan} \
-visual-studio-code-bin google-chrome neovim neofetch bat lolcat base-devel yay proxychains-ng tokei tree \
-telegram-desktop flameshot
+# 安装字体
+pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
+# pacman -S ttf-sarasa-gothic
+```
 
+```bash
+# 安装 chrome 浏览器
+sudo pacman -S --needed google-chrome
+# 然后就可以在 chrome 中打开本教程了
+
+# 安装 yay
+sudo pacman -S --needed yay
 # yay 换源
 yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
-# 查看 Fira 字体
-fc-list | grep Fira
+
+# qq telegram 百度网盘 网抑云
+# Telegram 简体中文语言包：https://t.me/setlanguage/zhcncc
+sudo pacman -S --needed linuxqq telegram-desktop baidunetdisk-bin netease-cloud-music-gtk
+# 钉钉 xmind
+yay -S --needed dingtalk-electron xmind-2020
+
+# WPS 以及其部分可选依赖
+sudo pacman -S --needed wps-office-cn wps-office-mime-cn wps-office-mui-zh-cn
+# WPS 需要的字体
+sudo pacman -S --needed ttf-wps-fonts
+# yay -S ttf-ms-fonts wps-office-fonts
+
+# vscode 等等
+sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager
+```
+
+接下来修正简体中文显示为异体（日文）字形的问题，`vim ~/.fonts.conf`，写入如下内容：
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Sans CJK SC</family>
+      <family>Noto Sans CJK TC</family>
+      <family>Noto Sans CJK JP</family>
+    </prefer>
+  </alias>
+</fontconfig>
+```
+
+然后：
+
+```bash
+# 更新字体缓存即可生效
+fc-cache -fv
+# 执行以下命令检查，如果出现 NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular" 则表示设置成功
+fc-match -s | grep 'Noto Sans CJK'
 # 查看安装了的中文字体
 fc-list :lang=zh
 ```
@@ -123,99 +230,13 @@ Shift_L,   Down, Shift_L|Button5
 
 然后运行`imwheel`命令来生效。最后，打开系统设置->会话和启动->应用程序自启动->添加->命令：`/usr/bin/imwheel`
 
-## 设置代理
-
-### proxychains
-
-`vim /etc/proxychains.conf`
-
-- 取消 `quiet_mode` 的注释
-- 并且将最后一行的 `socks4 127.0.0.1 9095` 修改为 `socks5 127.0.0.1 7890` 和 `http 127.0.0.1 7891`
-- 代理 yay 的方法
-  - `export http_proxy=socks5://127.0.0.1:7890 && export https_proxy=socks5://127.0.0.1:7890`
-  - 如果要用 proxychains 则需要使用 gcc-go 重新编译 yay 和 proxychains
-
-### qv2ray
-
-请注意一定要同步好系统时间以及详读[qv2ray 文档](https://qv2ray.net/)
-
-1. 打开 qv2ray，启用 ssr 插件，点击插件，如果 ssr 未勾选则需要勾选再重启 qv2ray
-2. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；界面主题选择`Breeze`（即微风）；行为那里全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
-3. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作
-4. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
-5. 连接设置。勾选`绕过中国大陆`和使用本地 DNS
-6. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
-7. 最后，点确定按钮以保存设置
-
-点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
-
-```bash
-# 更换 geoip.dat 和 geosite.dat
-pc curl -L -o /tmp/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
-pc curl -L -o /tmp/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
-sudo cp /tmp/geoip.dat /usr/lib/v2ray && rm /tmp/geoip.dat
-sudo cp /tmp/geosite.dat /usr/lib/v2ray && rm /tmp/geosite.dat
-```
-
-### 透明代理
-
-尝试失败。。。逃
-
-```bash
-pacman -S cgproxy-git
-sudo systemctl enable --now cgproxy.service
-sudo vim /etc/cgproxy/config.json
-# 改成 "enable_gateway": true,
-# 再重启服务
-sudo systemctl restart cgproxy.service
-```
-
-## google-chrome
-
-若 chrome 可以打开系统代理设置（我的 manjaro xfce 就不行），可以略过此步。否则需要`google-chrome-stable --proxy-server="socks5://127.0.0.1:7890"`打开 chrome，登录帐号同步数据。之后弄好油猴脚本，并安装 Proxy SwitchyOmega 插件，用它来开启系统代理
-
-## git
-
-```bash
-git config --global user.email "751533978@qq.com"
-git config --global user.name "hyuuko"
-git config --global core.editor nvim
-
-su hyuuko
-# 如果把先前的机器上的私钥公钥备份，则再生成一份
-ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
-cat ~/.ssh/id_rsa.pub
-# 将公钥添加到 github 和 gitee
-```
-
-可以为 git 配置代理，但是没必要。如果远程仓库在 github 等国外的，直接用 proxychains 代理即可。
-
-## zsh
-
-有很多插件是已经预装好了的
-
-```bash
-su
-pacman -S zsh-theme-powerlevel10k
-# 从 gitee 克隆配置文件（用 git 协议进行 git push 时不需要输入用户名和密码）
-git clone git@gitee.com:BlauVogel/dotfiles.git && cd dotfiles
-rm /home/hyuuko/.p10k.zsh/root/.p10k.zsh  /home/hyuuko/.zshrc /root/.zshrc
-# 再创建软链接（请确保此时是在 dotfiles 目录中！）（直接复制也行）
-ln -s $(pwd)/manjaro-kde/.p10k.zsh /home/hyuuko/.p10k.zsh
-ln -s $(pwd)/manjaro-kde/.p10k.zsh /root/.p10k.zsh
-ln -s $(pwd)/manjaro-kde/.zshrc /home/hyuuko/.zshrc
-ln -s $(pwd)/manjaro-kde/.zshrc /root/.zshrc
-# 最后设置一下默认shell，将 root 用户和 hyuuko 用户的 /bin/bash 改为 /bin/zsh
-nvim /etc/passwd
-```
-
-zshrc 复制一下就好，注销后再登录
-
 ## 输入法和皮肤
 
-参考：
-
 - [Fcitx5 (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fcitx5_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+
+```bash
+pacman -S --needed fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl}
+```
 
 `vim ~/.pam_environment`，添加：
 
@@ -236,7 +257,7 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
   - `配置配置全局选项`
     - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
   - `拼音设置`
-    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键、快速输入的快捷键`Escape`
+    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键；快速输入的触发键双击即可改为空
     - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
   - `附加组件->云拼音`
     - 最小拼音长度`2`；后端`Baidu`
@@ -249,12 +270,142 @@ Vertical Candidate List=False
 # 按屏幕 DPI 使用
 PerScreenDPI=True
 # Font (设置成你喜欢的字体)
-Font="思源黑体 CN Medium 11"
+Font="Noto Sans CJK SC 11"
 # 主题
 Theme=Material-Color-Blue
 ```
 
 另外可以看看这个[深蓝词库转换软件](https://github.com/studyzy/imewlconverter)
+
+## 代理软件
+
+- [ArchWiki 推荐的代理软件](<https://wiki.archlinux.org/index.php/General_recommendations_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BB%A3%E7%90%86>)
+- [Qv2ray 文档](https://qv2ray.net/)
+
+```bash
+pacman -S v2ray qv2ray
+# 按需安装插件 qv2ray-plugin-ssr-dev-git qv2ray-plugin-trojan-dev-git ...
+```
+
+1. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；行为那里的复选框全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
+2. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作（如果系统时间不对，v2ray 无法正常工作）
+3. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
+4. 连接设置。勾选`绕过中国大陆`
+5. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
+6. 最后，点确定按钮以保存设置
+
+点击`分组`按钮，填好订阅和过滤，更新订阅（如果无法更新订阅，可能是订阅链接被墙了，建议先建一个非订阅分组，然后添加 ssr 链接，连接上，并且在首选项里让 qv2ray 代理自己，然后再填订阅连接，更新）
+
+## 透明代理
+
+- [透明代理 - 百度百科](https://baike.baidu.com/item/%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86)
+- [springzfx/cgproxy - GitHub](https://github.com/springzfx/cgproxy)
+
+- qv2ray 的设置，首选项
+  - 入站设置
+    - 可以不用勾选`设置系统代理`了
+    - 勾选`透明代理设置`；IPv6 监听地址填 `::1`；网络选项勾选 `TCP` 和 `UDP`；其他默认即可。
+
+```bash
+sudo pacman -S cgproxy-git
+# 启用 cgproxy 服务
+sudo systemctl enable --now cgproxy.service
+# v2ray TPROXY 需要一些特殊权限
+sudo setcap "cap_net_admin,cap_net_bind_service=ep" /usr/bin/v2ray
+```
+
+`sudo vim /etc/cgproxy/config.json`，编辑配置文件：
+
+```json
+{
+  "comment": "For usage, see https://github.com/springzfx/cgproxy",
+
+  "port": 12345,
+  "program_noproxy": ["v2ray", "qv2ray"],
+  "program_proxy": [],
+  "cgroup_noproxy": ["/system.slice/v2ray.service"],
+  "cgroup_proxy": ["/"],
+  "enable_gateway": false,
+  "enable_dns": true,
+  "enable_udp": true,
+  "enable_tcp": true,
+  "enable_ipv4": true,
+  "enable_ipv6": true,
+  "table": 10007,
+  "fwmark": 39283
+}
+```
+
+编辑配置文件后需要重启服务：
+
+```bash
+sudo systemctl restart cgproxy.service
+```
+
+测试（注：没有设置 http_proxy 等环境变量）：
+
+```bash
+$ curl -vI https://www.google.com
+*   Trying 31.13.68.1:443...
+* Connected to www.google.com (31.13.68.1) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+...
+```
+
+而且 qv2ray 里的 vCore 日志中会有：
+
+```
+2020/10/06 16:56:31 192.168.114.514:58429 accepted udp:114.114.114.114:53 [outBound_DIRECT]
+2020/10/06 16:56:31 192.168.114.514:45470 accepted tcp:31.13.68.1:443 [outBound_PROXY]
+```
+
+## google-chrome
+
+若 chrome 可以打开系统代理设置（我的 manjaro xfce 就不行），可以略过此步。否则需要`google-chrome-stable --proxy-server="socks5://127.0.0.1:7890"`打开 chrome，登录帐号同步数据。之后弄好油猴脚本，并安装 Proxy SwitchyOmega 插件，用它来开启系统代理
+
+## git
+
+注：邮箱和用户名请换成你自己的
+
+```bash
+git config --global user.email "751533978@qq.com"
+git config --global user.name "hyuuko"
+git config --global core.editor nvim
+
+# 建议在你新建的用户下进行
+# 如果把先前的机器上的私钥公钥备份，则再生成一份
+ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
+cat ~/.ssh/id_rsa.pub
+# 将公钥添加到 github 和 gitee
+```
+
+## zsh
+
+有很多插件是已经预装好了的
+
+```bash
+su
+pacman -S --needed zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k
+
+# 从 gitee 克隆配置文件（用 git 协议进行 git push 时不需要输入用户名和密码）
+git clone git@gitee.com:BlauVogel/dotfiles.git && cd dotfiles
+rm /home/hyuuko/.p10k.zsh/root/.p10k.zsh  /home/hyuuko/.zshrc /root/.zshrc
+# 再创建软链接（请确保此时是在 dotfiles 目录中！）（直接复制也行）
+ln -s $(pwd)/manjaro-kde/.p10k.zsh /home/hyuuko/.p10k.zsh
+ln -s $(pwd)/manjaro-kde/.p10k.zsh /root/.p10k.zsh
+ln -s $(pwd)/manjaro-kde/.zshrc /home/hyuuko/.zshrc
+ln -s $(pwd)/manjaro-kde/.zshrc /root/.zshrc
+# 最后设置一下默认shell，将 root 用户和 hyuuko 用户的 /bin/bash 改为 /bin/zsh
+nvim /etc/passwd
+```
+
+之后注销，再重新登录即可。
 
 ## Rust
 
@@ -508,12 +659,6 @@ systemctl status dogcom-d
 
 参考：[Drcom (简体中文)](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
-## TODO
-
-- [ ] neovim + SpaceVim 配置 C/C++ 和 Rust
-- [ ] 休眠后无法唤醒的问题
-- [ ] 尝试一下 [vscode-dev-containers 对于 Rust 的配置](https://github.com/microsoft/vscode-dev-containers/blob/master/containers/codespaces-linux/.devcontainer/library-scripts/rust-debian.sh)
-
 ## aria2
 
 ```bash
@@ -552,18 +697,6 @@ sudo systemctl start aria2c
 ## 美化
 
 不要调缩放率，否则 kconsole 会有透明线，调节字体 DPI 为 120 就够了
-
-### 更纱黑体（用于 VSCode）
-
-下载[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)，解压，选中安装所有 sarasa-mono-sc 开头的
-
-```bash
-sudo mkdir /usr/share/fonts/sarasa-gothic
-/home/hyuuko/下载/sarasa-gothic-ttf-0.12.14/
-cp sarasa-mono-sc-* /usr/share/fonts/sarasa-gothic
-fc-cache -vf # 更新字体缓存
-fc-list | grep Sarasa # 查看字体
-```
 
 ### 主题
 

@@ -29,13 +29,12 @@
   - [创建交换文件](#创建交换文件)
   - [新建用户](#新建用户)
   - [显卡驱动和图形界面](#显卡驱动和图形界面)
-  - [字体](#字体)
+  - [字体和常用软件](#字体和常用软件)
   - [输入法和皮肤](#输入法和皮肤)
   - [代理软件](#代理软件)
   - [透明代理](#透明代理)
   - [zsh](#zsh)
   - [git](#git)
-  - [其他软件](#其他软件)
   - [美化](#美化)
     - [系统设置](#系统设置)
     - [面板](#面板)
@@ -74,6 +73,7 @@
 2. 准备一个 1G 大小以上 U 盘（容量比 archlinux 的镜像文件大就行，如果没 U 盘，可以试试在手机上用 DriveDroid 模拟 U 盘）
 3. 在 Windows 上安装[Rufus](https://rufus.ie/zh_CN.html)，然后使用 Rufus 将第一步下载好的 archlinux 镜像刻录至 U 盘，分区类型选择 GPT，目标系统类型选择 UEFI，其他的设置默认即可
 4. 使用 Windows 自带的磁盘管理工具分出一块**未分配**的区域供我们要安装的 ArchLinux 使用
+5. **禁用 Windows 的快速启动**
 
 ### 启动到 Live 环境
 
@@ -194,7 +194,7 @@ pacman -Syy
 
 ```bash
 pacstrap /mnt --needed linux linux-firmware
-pacstrap /mnt --needed base base-devel dhcpcd neovim dialog wpa_supplicant networkmanager netctl
+pacstrap /mnt --needed base base-devel dhcpcd neovim dialog wpa_supplicant networkmanager netctl arch-install-scripts
 ```
 
 这些务必安装，否则之后可能会有连不上网络等等麻烦
@@ -387,7 +387,7 @@ useradd -m -G wheel username
 passwd username
 ```
 
-运行命令 `visudo` 修改 `/etc/sudoers`，将以下两行的注释去掉
+运行命令 `visudo` 修改 `/etc/sudoers`，将以下两行行首的`# `去掉
 
 ```bash
 # %wheel ALL=(ALL) ALL
@@ -404,25 +404,32 @@ passwd username
 
 - 如果有 NVIDIA 显卡，则：
   ```bash
-  pacman -S nvidia
+  pacman -S --needed nvidia
   ```
   注：这个软件包里的 `/usr/lib/modprobe.d/nvidia.conf` 禁用了 nouveau
 - 如果没有 NVIDIA 显卡，只有 Intel 核显，则：
   ```bash
-  pacman -S xf86-video-intel
+  pacman -S --needed xf86-video-intel
   ```
 
 接下来安装图形界面
 
 ```bash
 # 安装 xorg 组件
-pacman -S xorg
-# 安装 KDE plasma
-pacman -S plasma kde-applications
-# 安装显示管理器
-pacman -S sddm
-# 设置自启
+pacman -S --needed xorg
+# 安装 plasma 和 KDE 应用
+pacman -S --needed plasma kde-applications
+# 当提示 :: There are 8 providers available for ttf-font: 时，选择 2，即 noto-fonts
+# 当提示 :: There are 2 providers available for phonon-qt5-backend: 时，选择 1，即 phonon-qt5-gstreamer
+# 当提示 :: There are 3 providers available for cron: 时，选择 1，即 cronie
+
+# 安装显示管理器，用来自动启动图形界面和管理用户登录
+pacman -S --needed sddm
+# 启用 sddm，这样开机就会进入图形界面
 systemctl enable sddm
+# 触控板驱动
+pacman -S --needed xf86-input-synaptics
+
 # 桌面环境使用的是 NetworkManager
 systemctl disable netctl
 systemctl enable NetworkManager
@@ -430,18 +437,48 @@ systemctl enable NetworkManager
 reboot
 ```
 
-重启后，登录进你新建的用户，然后打开 System Settings->Regional Settings->Language，将简体中文移至第一个，然后再 Log out（注销）重新登录，就会是中文图形界面了。
-
-### 字体
+### 字体和常用软件
 
 - [Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 - [修正简体中文显示为异体（日文）字形 - ArchWiki](<https://wiki.archlinux.org/index.php/Localization_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)/Simplified_Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BF%AE%E6%AD%A3%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E4%B8%BA%E5%BC%82%E4%BD%93%EF%BC%88%E6%97%A5%E6%96%87%EF%BC%89%E5%AD%97%E5%BD%A2>)
 
+重启后，登录进你新建的用户，打开 Yakuake 终端
+
 ```bash
-pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-sarasa-gothic
+# 安装字体
+pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
+# pacman -S ttf-sarasa-gothic
 ```
 
-接下来修正简体中文显示为异体（日文）字形，`vim ~/.fonts.conf`，写入如下内容：
+然后打开 System Settings->Regional Settings->Language，点击 `Add languages`，添加简体中文，并将其移至第一个，`Apply` 使其生效，然后再 Log out（注销）重新登录，就会是中文图形界面了。
+
+```bash
+# 安装 chrome 浏览器
+sudo pacman -S --needed google-chrome
+# 然后就可以在 chrome 中打开本教程了
+
+# 安装 yay
+sudo pacman -S --needed yay
+# yay 换源
+yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
+
+# qq telegram 百度网盘 网抑云
+# Telegram 简体中文语言包：https://t.me/setlanguage/zhcncc
+sudo pacman -S --needed linuxqq telegram-desktop baidunetdisk-bin netease-cloud-music-gtk
+# 钉钉 xmind
+yay -S --needed dingtalk-electron xmind-2020
+
+# WPS 以及其部分可选依赖
+sudo pacman -S --needed wps-office-cn wps-office-mime-cn wps-office-mui-zh-cn
+# WPS 需要的字体
+sudo pacman -S --needed ttf-wps-fonts
+# yay -S ttf-ms-fonts wps-office-fonts
+
+# vscode 等等
+sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager
+```
+
+接下来修正简体中文显示为异体（日文）字形的问题，`vim ~/.fonts.conf`，写入如下内容：
 
 ```xml
 <?xml version="1.0"?>
@@ -571,6 +608,8 @@ vim /etc/passwd
 
 ### git
 
+注：邮箱和用户名请换成你自己的
+
 ```bash
 git config --global user.email "751533978@qq.com"
 git config --global user.name "hyuuko"
@@ -581,30 +620,6 @@ ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
 cat ~/.ssh/id_rsa.pub
 # 将公钥添加到 github 和 gitee
 ```
-
-### 其他软件
-
-```bash
-# 安装 yay
-pacman -S --needed yay
-# yay 换源
-yay --aururl "https://aur.tuna.tsinghua.edu.cn" --save
-
-# 聊天办公娱乐软件
-pacman -S --needed linuxqq telegram-desktop baidunetdisk-bin netease-cloud-music-gtk
-yay -S --needed dingtalk-electron xmind-2020
-
-# WPS 以及其部分可选依赖
-pacman -S --needed wps-office-cn wps-office-mime-cn wps-office-mui-zh-cn
-# 安装 WPS 需要的字体
-pacman -S --needed ttf-wps-fonts
-# yay -S ttf-ms-fonts wps-office-fonts
-
-# 其他软件
-pacman -S --needed visual-studio-code-bin google-chrome neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager xf86-input-synaptics
-```
-
-- [Telegram 简体中文语言包](https://t.me/setlanguage/zhcncc)
 
 ### 美化
 

@@ -114,11 +114,17 @@ ls -d /sys/firmware/efi/efivars
 
 ### 更新系统时间
 
+`vim /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
+
+```conf
+NTP=ntp.aliyun.com ntp1.aliyun.com ntp2.aliyun.com
+```
+
 ```bash
 # 启用 NTP 时间同步
 timedatectl set-ntp true
-# 检查服务状态
-timedatectl status
+# 查看 NTP 服务状态
+timedatectl timesync-status
 ```
 
 ### 建立硬盘分区
@@ -224,7 +230,9 @@ arch-chroot /mnt
 ```bash
 # 设置时区为上海
 timedatectl set-timezone Asia/Shanghai
-# 生成 /etc/adjtime
+# 查看时间
+date -R
+# 将硬件时钟（RTC）调整为与目前的系统时钟一致
 hwclock --systohc
 ```
 
@@ -347,7 +355,7 @@ Server = https://mirrors.cloud.tencent.com/archlinuxcn/$arch
 chattr +i /etc/pacman.d/mirrorlist
 chattr +i /etc/pacman.conf
 # 设置 DNS
-echo 'nameserver 114.114.114.114' > /etc/resolv.conf
+echo 'nameserver 223.5.5.5' > /etc/resolv.conf
 chattr +i /etc/resolv.conf
 # 如果之后想修改这些文件，可以 chattr -i ... 以去除写保护
 # 重启网络服务
@@ -502,6 +510,8 @@ sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-n
 fc-cache -fv
 # 执行以下命令检查，如果出现 NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular" 则表示设置成功
 fc-match -s | grep 'Noto Sans CJK'
+# 查看安装了的中文字体
+fc-list :lang=zh
 ```
 
 ### 输入法和皮肤
@@ -509,7 +519,7 @@ fc-match -s | grep 'Noto Sans CJK'
 - [Fcitx5 (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fcitx5_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 
 ```bash
-pacman -S --needed fcitx5 fcitx5-{gtk,qt,configtool,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl}
+pacman -S --needed fcitx5-{im,material-color,chinese-addons} fcitx5-pinyin-{zhwiki,moegirl}
 ```
 
 `vim ~/.pam_environment`，添加：
@@ -755,6 +765,7 @@ Shift_L,   Down, Shift_L|Button5
 ### 校园网
 
 - [Drcom (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Drcom_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
+- [mchome/dogcom](https://github.com/mchome/dogcom)
 
 学校提供的 linux 版客户端经常掉线，故选择使用 dogcom。
 
@@ -810,7 +821,7 @@ systemctl status dogcom-d
 ## 遇到过的一些问题
 
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
-- VSCode 删除（移动进回收站） ext4 文件系统中的文件时，会卡顿。解决办法：`echo 'export ELECTRON_TRASH=gio' > ~/.config/plasma-workspace/env/electron-trash-gio.sh`，然后注销，重新登录。（我感觉并没有太大的改善，建议直接 shift+delete 彻底删除
+- VSCode 删除（移动进回收站）文件时会卡顿。这是因为默认状态下，Electron 使用 gio 删除文件。解决办法是让 Electron 使用 kioclient5：`echo 'ELECTRON_TRASH=kioclient5' >> ~/.pam_environment`，然后注销，重新登录。
 - 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
@@ -860,6 +871,7 @@ yay -S r8152-dkms
   # 将配置追加至 /etc/fstab
   genfstab / | grep '/dev/sda2' | >> /etc/fstab
   ```
+- 给 flameshot 配置快捷键：系统设置->快捷键->全局快捷键->添加应用程序。输入 flameshot，回车，就会出现火焰截图。设置进行截图的快捷键为 `Ctrl + Alt + A`
 
 ## 开发环境配置
 

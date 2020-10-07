@@ -117,12 +117,11 @@ alias cat='bat --style=plain'
 alias vim='nvim'
 alias pc='proxychains4 -q'
 alias sudo='sudo ' # 这样可以让 sudo 后面跟其他 alias
-# 用来手动开关代理，建议走 http 协议，因为 wget 不支持 socks5
-# 而且用 socks5 协议时，qv2ray 只能根据 ip 来分发流量的（有时不怎么准
-#my_proxy=http://127.0.0.1:8889
-#alias p-on='export all_proxy='${my_proxy}' http_proxy='${my_proxy}' https_proxy='${my_proxy}''
-#alias p-off='unset all_proxy http_proxy https_proxy'
-#p-on
+
+# socks5h 会让代理服务器解析主机，而 socks5 在本地解析主机。另外 wget 不支持 socks5
+alias pon='export all_proxy=socks5h://127.0.0.1:1089 http_proxy=http://127.0.0.1:8889 https_proxy=http://127.0.0.1:8889'
+alias poff='unset all_proxy http_proxy https_proxy'
+pon
 # 以 sudo 权限打开 vscode
 alias CODE='sudo code --user-data-dir="/home/hyuuko/.vscode-root"'
 # 关闭 .net 遥测

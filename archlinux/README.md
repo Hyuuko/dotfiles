@@ -33,8 +33,8 @@
   - [输入法和皮肤](#输入法和皮肤)
   - [代理软件](#代理软件)
   - [透明代理](#透明代理)
-  - [zsh](#zsh)
   - [git](#git)
+  - [zsh](#zsh)
   - [美化](#美化)
     - [系统设置](#系统设置)
     - [面板](#面板)
@@ -64,6 +64,7 @@
 
 - [以官方 Wiki 的方式安装 ArchLinux](https://www.viseator.com/2017/05/17/arch_install/)
 - [ArchLinux 安装后的必须配置与图形界面安装教程](https://www.viseator.com/2017/05/19/arch_setup/)
+- [Arch Linux 简明实用教程](https://kagarinokiriestudio.github.io/ArchLinuxTutorial/#/)
 
 ## 安装前的准备
 
@@ -584,6 +585,7 @@ pacman -S v2ray qv2ray
 
 - [透明代理 - 百度百科](https://baike.baidu.com/item/%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86)
 - [springzfx/cgproxy - GitHub](https://github.com/springzfx/cgproxy)
+- [使用 Qv2ray+cgproxy 配置透明代理（仅限 Linux）](https://kagarinokiriestudio.github.io/ArchLinuxTutorial/#/advanced/transparentProxy)
 
 - qv2ray 的设置，首选项
   - 入站设置
@@ -594,7 +596,7 @@ pacman -S v2ray qv2ray
 sudo pacman -S cgproxy-git
 # 启用 cgproxy 服务
 sudo systemctl enable --now cgproxy.service
-# v2ray TPROXY 需要一些特殊权限
+# 如果启用了 udp 的透明代理（dns 也是 udp），则给 v2ray 二进制文件加上相应的特权
 sudo setcap "cap_net_admin,cap_net_bind_service=ep" /usr/bin/v2ray
 ```
 
@@ -649,6 +651,24 @@ $ curl -vI https://www.google.com
 2020/10/06 16:56:31 192.168.114.514:45470 accepted tcp:31.13.68.1:443 [outBound_PROXY]
 ```
 
+### git
+
+注：邮箱和用户名请换成你自己的；在你的用户下进行（别在 root 用户进行）
+
+```bash
+sudo pacman -S --needed git
+
+git config --global user.email "751533978@qq.com"
+git config --global user.name "hyuuko"
+git config --global core.editor nvim
+
+# 建议在你新建的用户下进行
+# 如果把先前的机器上的私钥公钥备份，则再生成一份
+ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
+cat ~/.ssh/id_rsa.pub
+# 将公钥添加到 github 和 gitee
+```
+
 ### zsh
 
 注：请把以下的 hyuuko 换成你自己的用户名
@@ -670,22 +690,6 @@ vim /etc/passwd
 ```
 
 之后注销，再重新登录即可。
-
-### git
-
-注：邮箱和用户名请换成你自己的
-
-```bash
-git config --global user.email "751533978@qq.com"
-git config --global user.name "hyuuko"
-git config --global core.editor nvim
-
-# 建议在你新建的用户下进行
-# 如果把先前的机器上的私钥公钥备份，则再生成一份
-ssh-keygen -t rsa -b 4096 -C "751533978@qq.com"
-cat ~/.ssh/id_rsa.pub
-# 将公钥添加到 github 和 gitee
-```
 
 ### 美化
 
@@ -714,12 +718,11 @@ yay -S ocs-url
     - 标题栏按钮。左边是 菜单 保持在上方，右边是 上下文帮助 最小化 最大化 关闭
 - 颜色。选择`亮色微风`
 - 图标。选择`Uos`
-- 字体。DPI 120
+- 字体。DPI 120 或者改缩放
 - 工作区间行为
   - 常规行为->动画速度。调到第 13 格
   - 锁屏->外观。选择锁屏壁纸
 - 输入设备->鼠标。指针速度 8 格
-- 显示和监控->混成器->渲染后端。选择`OpenGL 3.1`
 - 在桌面上右键，配置桌面
   - 壁纸。
   - 鼠标动作。中键改为`切换窗口`

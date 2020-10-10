@@ -115,12 +115,6 @@ ls -d /sys/firmware/efi/efivars
 
 ### 更新系统时间
 
-`vim /etc/systemd/timesyncd.conf`，取消 `#NTP=` 的注释。然后填上 NTP 服务器的地址
-
-```conf
-NTP=ntp.aliyun.com ntp1.aliyun.com ntp2.aliyun.com
-```
-
 ```bash
 # 启用 NTP 时间同步
 timedatectl set-ntp true
@@ -371,7 +365,7 @@ pacman -Syu                         # 系统更新
 - [交换文件 - ArchWiki](<https://wiki.archlinux.org/index.php/Swap_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BA%A4%E6%8D%A2%E6%96%87%E4%BB%B6>)
 
 ```bash
-# 创建一个 8G 大小的文件，大约需要 1 分钟。注意最好别用 fallocate 命令
+# 创建一个 8G 大小的文件。注意最好别用 fallocate 命令
 dd if=/dev/zero of=/swapfile bs=1G count=8
 # 为交换文件设置权限
 chmod 600 /swapfile
@@ -446,12 +440,12 @@ systemctl enable NetworkManager
 reboot
 ```
 
+重启后，登录进你新建的用户，可以打开 Yakuake 终端来运行命令。你可能会发现无法使用触摸板进行点击，这需要在系统设置->触摸板中进行设置。
+
 ### 字体和常用软件
 
 - [Fonts (简体中文) - ArchWiki](<https://wiki.archlinux.org/index.php/Fonts_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)
 - [修正简体中文显示为异体（日文）字形 - ArchWiki](<https://wiki.archlinux.org/index.php/Localization_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)/Simplified_Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E4%BF%AE%E6%AD%A3%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E4%B8%BA%E5%BC%82%E4%BD%93%EF%BC%88%E6%97%A5%E6%96%87%EF%BC%89%E5%AD%97%E5%BD%A2>)
-
-重启后，登录进你新建的用户，打开 Yakuake 终端
 
 ```bash
 # 安装字体
@@ -462,9 +456,9 @@ pacman -S --needed nerd-fonts-fira nerd-fonts-fira-code noto-fonts noto-fonts-cj
 然后打开 System Settings->Regional Settings->Language，点击 `Add languages`，添加简体中文，并将其移至第一个，`Apply` 使其生效，然后再 Log out（注销）重新登录，就会是中文图形界面了。
 
 ```bash
-# 安装 chrome 浏览器
-sudo pacman -S --needed google-chrome
-# 然后就可以在 chrome 中打开本教程了
+# 安装 firefox 浏览器
+sudo pacman -S --needed firefox
+# 然后就可以在 firefox 中打开本教程了
 
 # 安装 yay
 sudo pacman -S --needed yay
@@ -714,7 +708,6 @@ yay -S ocs-url
 - 图标。选择`Uos`
 - 字体。DPI 120 或者改缩放
 - 工作区间行为
-  - 常规行为->动画速度。调到第 13 格
   - 桌面特效->模糊。模糊强度 3,噪点强度 0
   - 锁屏->外观。选择锁屏壁纸，位置缩放，保持比例，背景模糊
 - 输入设备->鼠标。指针速度 8 格
@@ -773,6 +766,10 @@ Shift_L,   Down, Shift_L|Button5
 
 学校提供的 linux 版客户端经常掉线，故选择使用 dogcom。
 
+```bash
+yay -S dogcom-git
+```
+
 在 windows 上使用学校提供的客户端，在登录前用 wireshark 开始截包，保存文件。接着下载[配置文件生成器](https://raw.githubusercontent.com/drcoms/generic/master/drcom_d_config.py)，将其与第一步的截包文件放到同一个目录下，并且将 `filename = '3.pcapng'` 中的 `3.pcapng` 改为第一步保存的文件名。接着 `python2 drcom_d_config.py > dhcp.conf`。我得到的内容为：
 
 ```conf
@@ -825,7 +822,12 @@ systemctl status dogcom-d
 ## 遇到过的一些问题
 
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
-- VSCode 删除（移动进回收站）文件时会卡顿。这是因为默认状态下，Electron 使用 gio 删除文件。解决办法是让 Electron 使用 kioclient5：`echo 'ELECTRON_TRASH=kioclient5' >> ~/.pam_environment`，然后注销，重新登录。
+- VSCode 删除（移动进回收站）文件时会卡顿。这是因为默认状态下，Electron 使用 gio 删除文件。解决办法是让 Electron 使用 kioclient5
+  ```bash
+  su
+  echo 'export ELECTRON_TRASH=kioclient5' > /etc/profile.d/electron.sh
+  ```
+  注销，重新登录
 - 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
@@ -840,6 +842,7 @@ systemctl status dogcom-d
 ### vscode 登录账号的问题
 
 > Writing login information to the keychain failed with error 'The name org.freedesktop.secrets was not provided by any .service files'.
+> 或者：Error while starting Settings Sync: No authentication provider 'github' is currently registered.
 
 ```bash
 # https://github.com/MicrosoftDocs/live-share/issues/224

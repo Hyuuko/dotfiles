@@ -531,6 +531,8 @@ XMODIFIERS    DEFAULT=\@im=fcitx5
 cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
 ```
 
+注销，重新登录，fcitx5 就会自动运行
+
 - 打开 Fcitx 5 配置
   - 输入法只留下`键盘-英语（美国）`和`Pinyin`
   - 拼音设置
@@ -555,7 +557,7 @@ pacman -S v2ray qv2ray
 ```
 
 1. 首选项->常规设置。如果是暗色主题，则勾选适应主题的那两项，否则不勾选；行为那里的复选框全部勾选，记忆上次的链接；延迟测试方案勾选`TCPing`
-2. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`以确保 v2ray core 能够正常工作（如果系统时间不对，v2ray 无法正常工作）
+2. 内核设置。v2ray 核心可执行文件路径改成`/usr/bin/v2ray`；然后点击`检查V2Ray核心设置`和`联网对时`（如果系统时间不对，v2ray 无法正常工作）
 3. 入站设置。监听地址设置为`0.0.0.0`可以让同一局域网的其他设备连接；设置好端口并且勾选`设置系统代理`
 4. 连接设置。勾选`绕过中国大陆`
 5. 高级路由设置。域名策略选择`IPIfNonMatch`；域名阻断填入`geosite:category-ads-all`以屏蔽广告
@@ -858,20 +860,27 @@ yay -S r8152-dkms
 - Alt+Space 或者直接在桌面输入字符就可打开 KRunner（可以用来搜索应用程序、书签等）
 - 状态栏剪贴板右键->配置剪贴板->常规->勾选「忽略选区」。这样能避免鼠标选中文字时自动复制
 - 感觉自带的 `KDE 分区管理器` 比 `GParted` 更好用，打开 `KDE 分区管理器`，编辑每个分区的标签名（不建议写成中文）
-- [Linux 开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
+- 与 Windows 共用一个分区，并且[开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
   ```bash
-  su # 切换至 root 用户
+  su # 为了方便，切换至 root 用户
   pacman -S --needed arch-install-scripts
   # 查看磁盘信息，找到自己想要挂载的分区
   fdisk -l
-  # 以 /dev/sda2 为例，先创建一个文件夹
+  # 以 /dev/sda4 为例，视需要将其格式化
+  # sudo mkfs.ntfs -f /dev/sda4  # -f 选项快速格式化
+  # 创建一个文件夹作为挂载点
   mkdir /mnt/XXX
-  # 更改其所有者及用户组，此处的 hyuuko 请改为你自己的
+  # 更改其所有者及用户组，此处的 hyuuko 请改为你自己的（不过，如果是 ntfs 或者 fat 等等，挂载后所有者会变为 root）
   chown hyuuko:hyuuko /mnt/XXX
   # 进行挂载
-  mount /dev/sda2 /mnt/XXX
-  # 将配置追加至 /etc/fstab
-  genfstab / | grep '/dev/sda2' | >> /etc/fstab
+  mount /dev/sda4 /mnt/XXX
+  # 将配置添加到 /etc/fstab，这样就会开机时自动挂载了
+  genfstab / | grep /dev/sda4 >> /etc/fstab
+  # 检查一下 /etc/fstab，防止出错
+  cat /etc/fstab
+  # 最后再验证一下：先卸载改分区，再挂载所有 /etc/fstab 中未挂载的分区
+  umount /mnt/XXX
+  mount -a
   ```
 - 给 flameshot 配置快捷键：系统设置->快捷键->全局快捷键->添加应用程序。输入 flameshot，回车，就会出现火焰截图。设置进行截图的快捷键为 `Ctrl + Alt + A`
 

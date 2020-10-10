@@ -532,14 +532,15 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
 ```
 
 - 打开 Fcitx 5 配置
-  - 输入法只留下`键盘-英语（美国）`和`拼音`
-  - `配置配置全局选项`
-    - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
-  - `拼音设置`
+  - 输入法只留下`键盘-英语（美国）`和`Pinyin`
+  - 拼音设置
     - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键；快速输入的触发键双击即可改为空
     - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
-  - `附加组件->云拼音`
-    - 最小拼音长度`2`；后端`Baidu`
+  - 配置全局选项
+    - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
+  - 配置附加组件
+    - Classic User Interface。主题选择 Material-Color-Blue
+    - Cloud Pinyin。最小拼音长度`2`；后端`Baidu`
 
 接下来配置输入法皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
 
@@ -688,7 +689,7 @@ vim /etc/passwd
 ### 美化
 
 ```bash
-# 用于安装主题、图标等
+# 用于在网页上，安装主题、图标等
 yay -S ocs-url
 ```
 
@@ -710,6 +711,10 @@ yay -S ocs-url
 - 工作区间行为
   - 桌面特效->模糊。模糊强度 3,噪点强度 0
   - 锁屏->外观。选择锁屏壁纸，位置缩放，保持比例，背景模糊
+- 开机和关机
+  - 登录屏幕（SDDM）
+    - 主题选择`Layan`
+    - 高级。自动登录、注销后立即登录
 - 输入设备->鼠标。指针速度 8 格
 - 显示和监控->混成器。缩放方法平滑，渲染后端 2.0
 - 在桌面上右键，配置桌面
@@ -811,7 +816,7 @@ ror_version = False
 keepalive1_mod = True
 ```
 
-在 linux 中，先 `yay -S dogcom-git` 安装 dogcom，然后将 `/etc/drcom.d/dhcp.conf` 修改成上面的样子，最后启用 dogcom 服务：
+在 linux 中，先 `yay -S dogcom-git` 安装 dogcom，然后将 `/etc/dogcom.d/dhcp.conf` 修改成上面的样子，最后启用 dogcom 服务：
 
 ```bash
 sudo systemctl enable --now dogcom-d

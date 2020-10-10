@@ -154,7 +154,7 @@ cfdisk /dev/sda
 
 ```bash
 # 将 EFI System 分区格式化为 fat32
-mkfs.vfat /dev/sda1
+mkfs.vfat -F 32 /dev/sda1
 # 将 Linux root 分区格式化为 ext4
 mkfs.ext4 /dev/sda2
 # 将 Linux home 分区格式化为 ext4
@@ -542,19 +542,6 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
     - Classic User Interface。主题选择 Material-Color-Blue
     - Cloud Pinyin。最小拼音长度`2`；后端`Baidu`
 
-接下来配置输入法皮肤，详见[hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color)。`vim ~/.config/fcitx5/conf/classicui.conf`，添加
-
-```conf
-# 垂直候选列表
-Vertical Candidate List=False
-# 按屏幕 DPI 使用
-PerScreenDPI=True
-# Font (设置成你喜欢的字体)
-Font="Noto Sans CJK SC 11"
-# 主题
-Theme=Material-Color-Blue
-```
-
 另外可以看看这个[深蓝词库转换软件](https://github.com/studyzy/imewlconverter)
 
 ### 代理软件
@@ -874,7 +861,7 @@ yay -S r8152-dkms
 - [Linux 开机自动挂载分区](https://www.wannaexpresso.com/2020/02/23/linux-auto-mount/)
   ```bash
   su # 切换至 root 用户
-  pacman -S arch-install-scripts
+  pacman -S --needed arch-install-scripts
   # 查看磁盘信息，找到自己想要挂载的分区
   fdisk -l
   # 以 /dev/sda2 为例，先创建一个文件夹

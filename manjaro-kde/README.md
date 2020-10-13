@@ -253,6 +253,9 @@ sudo grub-install /dev/sda2
 
 https://github.com/Gabirel/Hack-SpaceVim/blob/master/README_zh_CN.adoc
 
+- [Martins3/My-Linux-config - GitHub](https://github.com/Martins3/My-Linux-config)
+- [Vim 速查表](https://github.com/skywind3000/awesome-cheatsheets/blob/master/editors/vim.txt)
+
 先确保安装好了 npm 和 yarn，并且换源了
 
 ```bash

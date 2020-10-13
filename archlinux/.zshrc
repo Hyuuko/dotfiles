@@ -117,13 +117,12 @@ alias cat='bat --style=plain'
 alias vim='nvim'
 alias pc='proxychains4 -q'
 alias sudo='sudo ' # 这样可以让 sudo 后面跟其他 alias
+alias man-cn='LANG=zh_CN.UTF-8 man' # 查看中文手册
 
 # socks5h 会让代理服务器解析主机，而 socks5 在本地解析主机。另外 wget 不支持 socks5
 alias pon='export all_proxy=socks5h://127.0.0.1:1089 http_proxy=http://127.0.0.1:8889 https_proxy=http://127.0.0.1:8889'
 alias poff='unset all_proxy http_proxy https_proxy'
 pon
-# 以 sudo 权限打开 vscode
-alias CODE='sudo code --user-data-dir="/home/hyuuko/.vscode-root"'
 # 关闭 .net 遥测
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 # 用于修复目前外接 2k 显示器时，壁纸并未全屏的问题

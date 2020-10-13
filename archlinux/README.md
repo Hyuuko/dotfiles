@@ -426,9 +426,9 @@ pacman -S --needed plasma kde-applications
 # 当提示 :: There are 2 providers available for phonon-qt5-backend: 时，选择 1，即 phonon-qt5-gstreamer
 # 当提示 :: There are 3 providers available for cron: 时，选择 1，即 cronie
 
-# 安装显示管理器，用来自动启动图形界面和管理用户登录
+# 安装显示管理器（登录管理器），用来进行图形界面登录
 pacman -S --needed sddm
-# 启用 sddm，这样开机就会进入图形界面
+# 启用 sddm，这样开机就会进入图形登录界面
 systemctl enable sddm
 # 触控板驱动
 pacman -S --needed xf86-input-synaptics
@@ -478,7 +478,7 @@ sudo pacman -S --needed ttf-wps-fonts
 # yay -S ttf-ms-fonts wps-office-fonts
 
 # vscode 等等
-sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager
+sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager pacman-contrib
 ```
 
 接下来修正简体中文显示为异体（日文）字形的问题，`vim ~/.fonts.conf`，写入如下内容：
@@ -541,7 +541,7 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
   - 配置全局选项
     - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
   - 配置附加组件
-    - Classic User Interface。主题选择 Material-Color-Blue
+    - Classic User Interface。字体大小 11；主题选择 `Material-Color-Blue`
     - Cloud Pinyin。最小拼音长度`2`；后端`Baidu`
 
 另外可以看看这个[深蓝词库转换软件](https://github.com/studyzy/imewlconverter)
@@ -606,13 +606,13 @@ sudo setcap "cap_net_admin,cap_net_bind_service=ep" /usr/bin/v2ray
 }
 ```
 
-编辑配置文件后需要重启服务：
+编辑配置文件后需要重启 cgproxy 服务：
 
 ```bash
 sudo systemctl restart cgproxy.service
 ```
 
-测试（注：没有设置 http_proxy 等环境变量）：
+最好退出 qv2ray，再重新打开，最后进行测试（注：没有设置 http_proxy 等环境变量）：
 
 ```bash
 $ curl -vI https://www.google.com
@@ -631,7 +631,7 @@ $ curl -vI https://www.google.com
 而且 qv2ray 里的 vCore 日志中会有：
 
 ```
-2020/10/06 16:56:31 192.168.114.514:58429 accepted udp:114.114.114.114:53 [outBound_DIRECT]
+2020/10/06 16:56:31 192.168.114.514:58429 accepted udp:223.5.5.5:53 [outBound_DIRECT]
 2020/10/06 16:56:31 192.168.114.514:45470 accepted tcp:31.13.68.1:443 [outBound_PROXY]
 ```
 
@@ -645,6 +645,7 @@ sudo pacman -S --needed git
 git config --global user.email "751533978@qq.com"
 git config --global user.name "hyuuko"
 git config --global core.editor nvim
+git config --global core.filemode false
 
 # 建议在你新建的用户下进行
 # 如果把先前的机器上的私钥公钥备份，则再生成一份
@@ -661,10 +662,11 @@ cat ~/.ssh/id_rsa.pub
 su
 pacman -S --needed zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k
 
-# 从 gitee 克隆配置文件（用 git 协议进行 git push 时不需要输入用户名和密码）
-git clone git@gitee.com:BlauVogel/dotfiles.git && cd dotfiles
+# 从 gitee 克隆我的 dotfiles，并 cd 进去
+git clone --depth=1 https://gitee.com/BlauVogel/dotfiles.git && cd dotfiles
+# 删除原有的 .p10.zsh 和 .zshrc（建议备份一下
 rm /home/hyuuko/.p10k.zsh/root/.p10k.zsh  /home/hyuuko/.zshrc /root/.zshrc
-# 再创建软链接（请确保此时是在 dotfiles 目录中！）（直接复制也行）
+# 再创建软链接指向我的 .p10.zsh 和 .zshrc（请确保此时是在 dotfiles 目录中！）（直接复制也行）
 ln -s $(pwd)/archlinux/.p10k.zsh /home/hyuuko/.p10k.zsh
 ln -s $(pwd)/archlinux/.p10k.zsh /root/.p10k.zsh
 ln -s $(pwd)/archlinux/.zshrc /home/hyuuko/.zshrc
@@ -694,9 +696,10 @@ yay -S ocs-url
   - 窗口装饰
     - 主题。选择`Layan`，无边框
     - 标题栏按钮。左边是 菜单 保持在上方，右边是 上下文帮助 最小化 最大化 关闭
-- 颜色。选择`Layan`
+- 颜色。将`亮色微风`的`选取背景色`改为`#5657f5`，再另存为一个新的配色方案`new1`，再选择它。
 - 图标。选择`Uos`
 - 字体。DPI 120 或者改缩放
+- 光标。微风
 - 工作区间行为
   - 桌面特效->模糊。模糊强度 3,噪点强度 0
   - 锁屏->外观。选择锁屏壁纸，位置缩放，保持比例，背景模糊
@@ -707,7 +710,7 @@ yay -S ocs-url
 - 输入设备->鼠标。指针速度 8 格
 - 显示和监控->混成器。缩放方法平滑，渲染后端 2.0
 - 在桌面上右键，配置桌面
-  - 壁纸。
+  - 壁纸。https://www.pixiv.net/artworks/61879076
   - 鼠标动作。中键改为`切换窗口`
 
 #### 面板
@@ -816,12 +819,7 @@ systemctl status dogcom-d
 ## 遇到过的一些问题
 
 - 如果透明出现问题，可以试着这样解决：系统设置->显示和监控->混成器，取消勾选`启动时开启混成`，应用，再勾选它，应用。
-- VSCode 删除（移动进回收站）文件时会卡顿。这是因为默认状态下，Electron 使用 gio 删除文件。解决办法是让 Electron 使用 kioclient5
-  ```bash
-  su
-  echo 'export ELECTRON_TRASH=kioclient5' > /etc/profile.d/electron.sh
-  ```
-  注销，重新登录
+- VSCode 删除（移动进回收站）文件时会卡顿。这是因为 Electron 默认使用 gio 删除文件。解决办法是让 Electron 使用 kioclient5：`echo 'ELECTRON_TRASH=kioclient5' >> ~/.pam_environment`。注销，重新登录
 - 如果挂载的 ntfs 文件系统设备是只读的，无法写入，需要关闭 Win10 的快速启动：控制面板->硬件和声音->电源选项，点击`更改当前不可用的设置`，然后取消勾选`启用快速启动`，保存修改。
 - 系统负荷查看器
   - 在表格中鼠标不动停留 2 秒即可显示进程的详细信息
@@ -897,8 +895,6 @@ sudo pacman -S --needed docker
 sudo systemctl start docker
 # 或者设置开机自启并立即启动 docker
 # sudo systemctl enable --now docker.service
-# 重启 docker 服务
-sudo systemctl restart docker
 # 将当前用户加入 docker 用户组以赋予当前用户使用 docker 的权限
 sudo usermod -aG docker $USER
 ```
@@ -973,7 +969,7 @@ registry = "git://crates.rustcc.cn/crates.io-index"
 ### C/C++
 
 ```bash
-pacman -S --needed gcc clang lib32-gcc-libs gdb make binutils man-pages ccls bear
+pacman -S --needed gcc clang lib32-gcc-libs gdb make binutils man-pages man-pages-zh_cn ccls bear
 # 安装 qemu，有点大，有需要就装吧
 pacman -S --needed qemu-arch-extra
 ```

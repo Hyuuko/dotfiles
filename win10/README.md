@@ -10,8 +10,6 @@ bucket 可以理解为软件源
 
 ## 安装 scoop
 
-（因为我只用一个用户，所以就这样吧，如果想要全局安装，见文档）
-
 ```powershell
 # 设置安装目录为 E:\Scoop
 $env:SCOOP='E:\Scoop'
@@ -25,7 +23,7 @@ iwr -useb get.scoop.sh | iex
 # 查看帮助
 scoop help
 # 配置代理（这一步很重要，注意是 http 代理！）（所以就需要弄好代理了哦！）
-scoop config proxy 127.0.0.1:7891
+scoop config proxy 127.0.0.1:8889
 
 # 安装 aria2（默认会启用，若要禁用，scoop config aria2-enabled false）
 scoop install aria2
@@ -45,19 +43,19 @@ scoop checkup # 如果有，则按照提示解决问题
 
 ## 添加软件源
 
-如果没`scoop config proxy 127.0.0.1:7891`就会很慢很慢
+如果没`scoop config proxy 127.0.0.1:8889`就会很慢很慢
 
 ```powershell
 scoop bucket add extras
 scoop bucket add versions
-scoop bucket add nightlies
-scoop bucket add nirsoft
-scoop bucket add php
-scoop bucket add nerd-fonts
 scoop bucket add nonportable
-scoop bucket add java
-scoop bucket add games
-scoop bucket add jetbrains
+# scoop bucket add nightlies
+# scoop bucket add nirsoft
+# scoop bucket add php
+# scoop bucket add nerd-fonts
+# scoop bucket add java
+# scoop bucket add games
+# scoop bucket add jetbrains
 
 scoop update # 更新源列表以及 scoop 自身
 ```
@@ -67,17 +65,17 @@ scoop update # 更新源列表以及 scoop 自身
 ```powershell
 # scoop install googlechrome-dev firefox-developer vscode geekuninstaller fluent-terminal-np snipaste windows-terminal potplayer sublime-text vagrant
 # scoop install php-nts mysql redis nodejs-lts nginx apache composer curl python go gcc
-scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer bandizip winrar sumatrapdf
-# 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer
-scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python ninja
+scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer winrar sumatrapdf
+# 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer, bandizip
+# scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python ninja
 sudo scoop install FiraCode-NF FiraMono-NF
-scoop install wireshark
-sudo scoop install nmap
+# scoop install wireshark
+# sudo scoop install nmap
 ```
 
 打开 bandizip，关联文件。再打开 winrar，别关联文件，但是勾选`Integrate WinRAR into shell`和`Icons in context menus`。
 
-qv2ray 就是一个先有鸡还是先有蛋的问题了（我选择在安装 scoop 之前弄好 qv2ray，然后用 scoop 安装 qv2ray，再用 geekuninstaller 卸载原先的 qv2ray
+qv2ray 就是一个先有鸡还是先有蛋的问题了（我选择在安装 scoop 之前弄好 qv2ray，然后用 scoop 安装 qv2ray
 
 显示过的提示：
 
@@ -143,8 +141,6 @@ which       # Locate a shim/executable (similar to 'which' on Linux)
 Type 'scoop help <command>' to get help for a specific command.
 ```
 
-## 安装 Visual Studio
-
 ## 安装 Rust
 
 以管理员身份运行：
@@ -157,9 +153,6 @@ Type 'scoop help <command>' to get help for a specific command.
 ```
 
 然后打开`rustup-init.exe`，安装完后确保`E:\Rust\cargo\bin`在 Path 中（应该会自动弄好）
-rustup toolchain install nightly
-
-## 记录
 
 ## Chocolatey
 

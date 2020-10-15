@@ -926,10 +926,11 @@ sudo systemctl restart docker
 
 ```bash
 su hyuuko
+sudo mkdir /usr/local/rustup /usr/local/cargo
+sudo chown hyuuko:hyuuko /usr/local/rustup /usr/local/cargo
+
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 source /usr/local/cargo/env
-sudo chown -R hyuuko:hyuuko /usr/local/rustup /usr/local/cargo
-chmod -R u+w /usr/local/rustup /usr/local/cargo
 # 安装 nightly 版工具链
 rustup toolchain install nightly
 

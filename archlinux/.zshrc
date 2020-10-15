@@ -127,3 +127,4 @@ pon
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 # 用于修复目前外接 2k 显示器时，壁纸并未全屏的问题
 alias fixbackground='xrandr --output HDMI-1 --mode 1920x1080 && xrandr --output HDMI-1 --mode 2560x1440'
+export JAVA_HOME=/usr/lib/jvm/default

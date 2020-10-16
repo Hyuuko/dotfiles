@@ -51,6 +51,7 @@
   - [C/C++](#cc)
   - [Node.js](#nodejs)
   - [VMware](#vmware)
+  - [Java](#java)
 
 ## 部分参考资料
 
@@ -336,7 +337,7 @@ reboot
 
 无线网络，运行`wifi-menu`命令进行联网即可。
 
-然后添加 archlinuxcn 源，`vim /etc/pacman.conf`，取消`#Color`的注释以启用彩色输出，然后在文件末尾加上：
+然后添加 archlinuxcn 源，`vim /etc/pacman.conf`，取消`#Color`的注释以启用彩色输出，取消`[multilib]`两行的注释以启用 multilib 库。然后在文件末尾加上：
 
 ```conf
 [archlinuxcn]
@@ -475,10 +476,20 @@ yay -S --needed dingtalk-electron xmind-2020
 sudo pacman -S --needed wps-office-cn wps-office-mime-cn wps-office-mui-zh-cn
 # WPS 需要的字体
 sudo pacman -S --needed ttf-wps-fonts
-# yay -S ttf-ms-fonts wps-office-fonts
+yay -S ttf-ms-fonts wps-office-fonts
+
+# Ark 的 7Z 和 RAR 支持
+sudo pacman -S --needed p7zip unrar unarchiver
 
 # vscode 等等
 sudo pacman -S --needed visual-studio-code-bin neofetch bat lolcat proxychains-ng tokei tree flameshot partitionmanager pacman-contrib
+
+# Tim
+sudo pacman -S deepin.com.qq.office xsettingsd
+# 显示 :: 有 2 个软件包可提供 libfreetype.so=6-32，选择第二个 lib32-freetype2-infinality-ultimate
+# 系统设置->开机和关机->自动启动，添加 `/usr/bin/xsettingsd`，然后注销重新登录。
+WINEPREFIX=~/.deepinwine/Deepin-TIM deepin-wine winecfg
+# 将 DPI 改为 120
 ```
 
 接下来修正简体中文显示为异体（日文）字形的问题，`vim ~/.fonts.conf`，写入如下内容：
@@ -535,8 +546,8 @@ cp /usr/share/applications/fcitx5.desktop ~/.config/autostart/
 
 - 打开 Fcitx 5 配置
   - 输入法只留下`键盘-英语（美国）`和`Pinyin`
-  - 拼音设置
-    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键；快速输入的触发键双击即可改为空
+  - Pinyin 设置
+    - 页大小预测个数`10`；云拼音位置`2`；除了启用预测，其他的复选框都勾选；删除按笔画过滤的快捷键；快速输入的触发键双击即可改为空；取消勾选 `Use V to trigger quickphrase`
     - 词典->导入->在线浏览搜狗细胞词典，添加`计算机名词、计算机词汇大全`
   - 配置全局选项
     - `切换启用/禁用输入法`将 `Ctrl 空格` 改为左 `Shfit`
@@ -890,12 +901,14 @@ yay -S r8152-dkms
 
 ```bash
 # 安装 docker
-sudo pacman -S --needed docker
+sudo pacman -S --needed docker docker-compose
 # 启动 docker
 sudo systemctl start docker
 # 或者设置开机自启并立即启动 docker
 # sudo systemctl enable --now docker.service
+
 # 将当前用户加入 docker 用户组以赋予当前用户使用 docker 的权限
+# 需要注销重新登录才能生效
 sudo usermod -aG docker $USER
 ```
 
@@ -992,3 +1005,18 @@ sudo modprobe -a vmw_vmci vmmon                  # 加载 vmw_vmci 和 vmmon 内
 sudo systemctl enable --now vmware-networks      # 启用虚拟机网络
 sudo systemctl enable --now vmware-usbarbitrator # 启用 vmware 的 usb 设备连接
 ```
+
+### Java
+
+```bash
+sudo pacman -S --needed jdk8-openjdk openjdk8-doc openjdk8-src
+sudo archlinux-java set java-8-openjdk
+
+sudo pacman -S --needed intellij-idea-ultimate-edition
+```
+
+推荐通过以下三种方式之一获得免费的 JetBrains 全套产品许可证，大概两周就能申请通过：
+
+- 通过 GitHub 学生认证，获取 [GitHub Student Developer Pack](https://education.github.com/pack)，然后[用 GitHub 账户申请 JetBrains 的免费许可证](https://www.jetbrains.com/shop/eform/students/github/auth)
+- [使用学校邮箱申请](https://www.jetbrains.com/shop/eform/students)，如果失败，这可能是因为你的学校进黑名单了
+- [通过你的开源项目申请](https://www.jetbrains.com/shop/eform/opensource)

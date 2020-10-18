@@ -41,6 +41,7 @@
 - [其他](#其他)
   - [调整鼠标滚轮速度](#调整鼠标滚轮速度)
   - [校园网](#校园网)
+  - [双显卡切换](#双显卡切换)
 - [遇到过的一些问题](#遇到过的一些问题)
   - [vscode 登录账号的问题](#vscode-登录账号的问题)
   - [r8152 网卡 Tx timeout 错误断网](#r8152-网卡-tx-timeout-错误断网)
@@ -826,6 +827,16 @@ sudo systemctl enable --now dogcom-d
 # 查看状态，如果显示 Active: active (running)，则说明成功了
 systemctl status dogcom-d
 ```
+
+### 双显卡切换
+
+```bash
+sudo pacman -S --needed nvidia bbswitch xf86-video-intel
+yay -S optimus-manager-qt
+reboot
+```
+
+打开 Optimus 管理器，在托盘处，右键`设置`，在 `Optimus` 选项卡中，将 `Switching method` 设置为 `Bbswitch`，然后确定。托盘处右键 `Switch to Intel` 即可切换至 Intel 核显。
 
 ## 遇到过的一些问题
 

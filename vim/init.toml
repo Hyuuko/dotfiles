@@ -1,0 +1,80 @@
+#=============================================================================
+# dark_powered.toml --- dark powered configuration example for SpaceVim
+# Copyright (c) 2016-2020 Wang Shidong & Contributors
+# Author: Wang Shidong < wsdjeg at 163.com >
+# URL: https://spacevim.org
+# License: GPLv3
+#=============================================================================
+
+# All SpaceVim option below [option] section
+[options]
+    # set spacevim theme. by default colorscheme layer is not loaded,
+    # if you want to use more colorscheme, please load the colorscheme
+    # layer
+    # 设置主题
+    colorscheme = "onedark"
+    # 主题背景色
+    colorscheme_bg = "dark"
+    # Disable guicolors in basic mode, many terminal do not support 24bit
+    # true colors
+    # 启用终端真色
+    enable_guicolors = true
+    # Disable statusline separator, if you want to use other value, please
+    # install nerd fonts
+    # 状态栏上的分割符号形状
+    statusline_separator = "arrow"
+    statusline_inactive_separator = "arrow"
+    # 设置顶部标签列表序号类型，有以下五种类型，分别是 0 - 4
+    # 0: 1 ➛ ➊
+    # 1: 1 ➛ ➀
+    # 2: 1 ➛ ⓵
+    # 3: 1 ➛ ¹
+    # 4: 1 ➛ 1
+    buffer_index_type = 4
+
+    windows_index_type = 3
+    # 显示/隐藏顶部标签栏上的文件类型图标
+    enable_tabline_filetype_icon = true
+    # 是否在状态栏上显式当前模式
+    enable_statusline_mode = true
+    # 状态栏utf符号
+    statusline_unicode_symbols = true
+    # Enable vim compatible mode, avoid changing origin vim key bindings
+    vimcompatible = true
+    # 文件树插件
+    filemanager = "defx"
+    # 文件树放在左边
+    filetree_direction = "left"
+    autocomplete_method = "coc"
+
+# ----------------- SpaceVim 添加的各种 layers ---------------------------------
+
+# Enable autocomplete layer
+#[[layers]]
+#name = 'autocomplete'
+#auto_completion_return_key_behavior = "complete"
+#auto_completion_tab_key_behavior = "cycle"
+
+[[layers]]
+name = 'shell'
+default_position = 'top'
+default_height = 30
+
+# 必须启用这个，才能够使用其他主题
+[[layers]]
+name = "colorscheme"
+
+[[layers]]
+  name = "lang#markdown"
+
+[[layers]]
+  name = "lang#rust"
+
+# ----------------- 自定义插件 -------------------------------------------------
+# SpaceVim这部分的实现应该是 https://github.com/Shougo/dein.vim
+# 自定义插件其他选项可以通过 :h dein-options 查阅
+# coc.nvim 核心配置，不要删除
+[[custom_plugins]]
+  name = 'neoclide/coc.nvim'
+  merge = 0
+  rev = 'release'

@@ -156,7 +156,7 @@ cfdisk /dev/sda
 
 ```bash
 # 将 EFI System 分区格式化为 fat32
-mkfs.vfat -F 32 /dev/sda1
+mkfs.fat -F32 /dev/sda1
 # 将 Linux root 分区格式化为 ext4
 mkfs.ext4 /dev/sda2
 # 将 Linux home 分区格式化为 ext4
@@ -1002,7 +1002,7 @@ pacman -S --needed qemu-arch-extra
 ### Node.js
 
 ```bash
-pacman -S --needed nodejs-lts-erbium yarn npm
+sudo pacman -S --needed nodejs-lts-erbium yarn npm
 yarn config set registry https://registry.npm.taobao.org/ && yarn config get registry
 npm config set registry https://registry.npm.taobao.org/ && npm config get registry
 ```

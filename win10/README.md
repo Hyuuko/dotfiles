@@ -1,12 +1,13 @@
-scoop 是从 github 下载安装包，所以建议设置好代理
-
 参考：
 
-- [文档](https://github.com/lukesampson/scoop)
+- [Documentation](https://github.com/lukesampson/scoop/wiki)
 - [你需要掌握的 Scoop 技巧和知识](https://zhuanlan.zhihu.com/p/135278662)
-- [📝Scoop 初体验](https://github.com/Linnzh/Blog/issues/42#issuecomment-568158956)
 
-bucket 可以理解为软件源
+## Qv2ray
+
+scoop 的许多安装包都是从 github 等网站下载的，所以建议设置好代理
+
+下载 [Qv2ray.版本号.Windows-x64.7z](https://github.com/Qv2ray/Qv2ray/releases/latest) 和 [v2ray-windows-64.zip](https://github.com/v2fly/v2ray-core/releases/latest)（如果访问有点慢，试试把 `github.com` 改成 `hub.fastgit.org`），然后解压打开，使用方法见 [Qv2ray 文档](https://qv2ray.net/)。
 
 ## 安装 scoop
 
@@ -14,24 +15,26 @@ bucket 可以理解为软件源
 # 设置安装目录为 E:\Scoop
 $env:SCOOP='E:\Scoop'
 [Environment]::SetEnvironmentVariable('SCOOP', $env:SCOOP, 'User')
+# 设置全局软件安装目录也为 E:\Scoop
 $env:SCOOP_GLOBAL='E:\Scoop'
 [Environment]::SetEnvironmentVariable('SCOOP_GLOBAL', $env:SCOOP_GLOBAL, 'Machine')
 
-# 安装 scoop，E:\Scoop\shims 会被添加到 Path
+# 允许PowerShell执行本地脚本。提示是否更改执行策略时，输入 Y，然后回车确认
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+# 安装 scoop，安装完后 E:\Scoop\shims 会被添加到 Path
 iwr -useb get.scoop.sh | iex
 # 查看帮助
 scoop help
-# 配置代理（这一步很重要，注意是 http 代理！）（所以就需要弄好代理了哦！）
+# 配置代理（这一步很重要，注意是 http 代理！）（请提前弄好代理！）
 scoop config proxy 127.0.0.1:8889
 
 # 安装 aria2（默认会启用，若要禁用，scoop config aria2-enabled false）
 scoop install aria2
 # scoop 运行必备
 scoop install 7zip innounp dark grep lessmsi sudo git openssh touch
-# git 设置代理（如果现在还没代理就别弄这步了）
-git config --global http.proxy 'socks5://127.0.0.1:7890'
-git config --global https.proxy 'socks5://127.0.0.1:7890'
+# git 设置代理（如果现在没弄代理就别弄这步了）
+git config --global http.proxy 'socks5://127.0.0.1:1089'
+git config --global https.proxy 'socks5://127.0.0.1:1089'
 
 # 使 scoop 安装文件夹可通过防火墙
 sudo Add-MpPreference -ExclusionPath 'E:\Scoop'
@@ -41,9 +44,9 @@ sudo Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 
 scoop checkup # 如果有，则按照提示解决问题
 ```
 
-## 添加软件源
+## 添加 bucket
 
-如果没`scoop config proxy 127.0.0.1:8889`就会很慢很慢
+bucket 可以理解为软件仓库，视需求添加
 
 ```powershell
 scoop bucket add extras
@@ -51,37 +54,44 @@ scoop bucket add versions
 scoop bucket add nonportable
 # scoop bucket add nightlies
 # scoop bucket add nirsoft
-# scoop bucket add php
-# scoop bucket add nerd-fonts
-# scoop bucket add java
+scoop bucket add php
+scoop bucket add nerd-fonts
+scoop bucket add java
 # scoop bucket add games
-# scoop bucket add jetbrains
+scoop bucket add jetbrains
 
 scoop update # 更新源列表以及 scoop 自身
 ```
 
 ## 安装一些软件
 
+最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer, bandizip
+
 ```powershell
-# scoop install googlechrome-dev firefox-developer vscode geekuninstaller fluent-terminal-np snipaste windows-terminal potplayer sublime-text vagrant
-# scoop install php-nts mysql redis nodejs-lts nginx apache composer curl python go gcc
-scoop install geekuninstaller telegram v2ray qv2ray rufus spacesniffer winrar sumatrapdf
-# 最好不要用 scoop 安装那些需要关联文件还有上下文菜单的软件，比如 vscode，potplayer, bandizip
+# 安装 v2ray 和 qv2ray，安装完之后，之前用的可以删掉了
+scoop install v2ray qv2ray
+
+# 常用软件
+scoop install geekuninstaller telegram rufus spacesniffer winrar sumatrapdf
+# scoop install googlechrome-dev firefox-developer fluent-terminal-np snipaste windows-terminal sublime-text vagrant
+
+# 开发工具
 # scoop install nodejs-lts gcc llvm cmake mdbook oraclejdk python ninja
+# scoop install php-nts mysql redis nginx apache composer curl go
+
+# 安装 FiraCode 字体
 sudo scoop install FiraCode-NF FiraMono-NF
+
+# wireshark
 # scoop install wireshark
 # sudo scoop install nmap
 ```
 
-打开 bandizip，关联文件。再打开 winrar，别关联文件，但是勾选`Integrate WinRAR into shell`和`Icons in context menus`。
+打开 winrar，别关联文件，但是勾选`Integrate WinRAR into shell`和`Icons in context menus`。
 
-qv2ray 就是一个先有鸡还是先有蛋的问题了（我选择在安装 scoop 之前弄好 qv2ray，然后用 scoop 安装 qv2ray
-
-显示过的提示：
+安装软件时的一些输出：
 
 ```
-'qv2ray' suggests installing 'extras/vcredist2019'.
-
   WARNING: The scripts easy_install-3.8.exe and easy_install.exe are installed in 'E:\Scoop\apps\python\3.8.5\Scripts' which is not on PATH.
   Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
   WARNING: The scripts pip.exe, pip3.8.exe and pip3.exe are installed in 'E:\Scoop\apps\python\3.8.5\Scripts' which is not on PATH.
@@ -102,7 +112,6 @@ Allow applications and third-party installers to find python by running:
 所以最好就：
 
 ```powershell
-scoop install vcredist2019
 E:\Scoop\apps\python\current\install-pep-514.reg
 ```
 
